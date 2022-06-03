@@ -1,9 +1,7 @@
 import sys
 import asyncio
 
-from typing import Optional, Any, Dict, ClassVar
-from urllib.parse import quote as urlquote
-from base64 import urlsafe_b64encode
+from typing import List, Optional, Any, Dict, ClassVar
 
 import aiohttp
 import orjson
@@ -16,18 +14,12 @@ from .exceptions import HTTPException, Forbidden, NotFound, ServerError
 class Route:
     BASE: ClassVar[str] = "https://api.spotify.com/v1"
 
-    def __init__(self, method: str, path: str, **parameters: Any) -> None:
+    def __init__(self, method: str, path: str, **parameters: Dict[str, Any]) -> None:
         self.method = method
         self.path = path
-        url = self.BASE + self.path
-        if parameters:
-            url = url.format_map(
-                {
-                    k: urlquote(v) if isinstance(v, str) else v
-                    for k, v in parameters.items()
-                }
-            )
-        self.url: str = url
+        self.url = self.BASE + self.path
+
+        self.query = parameters
 
 
 class HTTPClient:
@@ -64,7 +56,9 @@ class HTTPClient:
 
         for tries in range(5):
             try:
-                async with self.__session.request(method, url, **kwargs) as response:
+                async with self.__session.request(
+                    method, url, params=route.query, **kwargs
+                ) as response:
                     data = orjson.loads(await response.text())
 
                     # TODO: ratelimiting
