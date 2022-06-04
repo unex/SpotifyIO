@@ -1,29 +1,15 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
-from .http import HTTPClient
 from .asset import Asset
 from .mixins import Url
 
-
-class PartialArtist(Url):
-    __slots__ = (
-        "id",
-        "uri",
-        "external_urls",
-        "name",
-    )
-
-    def __init__(self, http: HTTPClient, data: dict) -> None:
-        self._http = http
-
-        self.id: str = data["id"]
-        self.uri: str = data["uri"]
-        self.external_urls: dict = data["external_urls"]
-        self.name: str = data["name"]
+if TYPE_CHECKING:
+    from .state import State
 
 
 class Artist(Url):
     __slots__ = (
+        "_state",
         "id",
         "uri",
         "external_urls",
@@ -34,8 +20,8 @@ class Artist(Url):
         "popularity",
     )
 
-    def __init__(self, http: HTTPClient, data: dict) -> None:
-        self._http = http
+    def __init__(self, state, data: dict) -> None:
+        self._state: State = state
 
         self.id: str = data["id"]
         self.uri: str = data["uri"]

@@ -1,15 +1,18 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from .utils.time import fromspotifyiso
 
-from .http import HTTPClient
-from .artist import PartialArtist
-from .album import Album
 from .mixins import Url
+
+if TYPE_CHECKING:
+    from .state import State
+    from .album import Album
+    from .artist import Artist
 
 
 class Track(Url):
     __slots__ = (
+        "_state",
         "id",
         "uri",
         "external_urls",
@@ -27,8 +30,9 @@ class Track(Url):
         "track_number",
     )
 
-    def __init__(self, http: HTTPClient, data: dict) -> None:
-        self._http = http
+    def __init__(self, state, data: dict) -> None:
+        self._state: State = state
+        self.album: Album = self._state.album(data["album"])
 
         self.id: str = data["id"]
         self.uri: str = data["uri"]
@@ -52,7 +56,7 @@ class Track(Url):
 class ListTrack(Track):
     __slots__ = ("added_at",)
 
-    def __init__(self, http: HTTPClient, data: dict) -> None:
-        super().__init__(http, data["track"])
+    def __init__(self, state, data: dict) -> None:
+        super().__init__(state, data["track"])
 
         self.added_at = fromspotifyiso(data["added_at"])
