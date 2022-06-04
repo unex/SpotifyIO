@@ -106,12 +106,23 @@ class HTTPClient:
 
     # Albums
 
+    async def get_album(self, album_id: str):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-album"""
+        route = Route("GET", f"/albums/{album_id}")
+        return await self.request(route)
+
     async def get_albums(self, album_ids: List[str]):
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-albums"""
         route = Route("GET", "/albums", ids=",".join(album_ids))
         data = await self.request(route)
         return data["albums"]
+
     # Artists
+
+    async def get_artist(self, artist_id: str):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist"""
+        route = Route("GET", f"/artists/{artist_id}")
+        return await self.request(route)
 
     async def get_artists(self, artist_ids: List[str]):
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-artists"""
@@ -120,6 +131,11 @@ class HTTPClient:
         return data["artists"]
 
     # Tracks
+
+    async def get_track(self, track_id: str):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track"""
+        route = Route("GET", f"/tracks/{track_id}")
+        return await self.request(route)
 
     async def get_tracks(self, track_ids: List[str]):
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks"""

@@ -48,6 +48,9 @@ class Client:
     async def me(self) -> ClientUser:
         return ClientUser(self._http, await self._http.fetch_me())
 
+    async def fetch_album(self, album_id: str) -> Album:
+        return Album(self._http, await self._http.get_album(album_id))
+
     def fetch_albums(self, *album_ids: List[str]) -> ListIterator[Album]:
         async def gen():
             for chunk in Chunked(album_ids, 50):
@@ -56,6 +59,9 @@ class Client:
 
         return ListIterator(gen())
 
+    async def fetch_artist(self, artist_id: str) -> Artist:
+        return Artist(self._http, await self._http.get_artist(artist_id))
+
     def fetch_artists(self, *artist_ids: List[str]) -> ListIterator[Artist]:
         async def gen():
             for chunk in Chunked(artist_ids, 50):
@@ -63,6 +69,9 @@ class Client:
                     yield Artist(self._http, artist)
 
         return ListIterator(gen())
+
+    async def fetch_track(self, track_id: str) -> Track:
+        return Track(self._http, await self._http.get_track(track_id))
 
     def fetch_tracks(self, *track_ids: List[str]) -> ListIterator[Track]:
         async def gen():
