@@ -1,10 +1,14 @@
 import asyncio
 
-from typing import TYPE_CHECKING, Optional, Type, Any
+from typing import TYPE_CHECKING, List, Optional, Type, Any
 from types import TracebackType
+
+from .utils.chunked import Chunked
+from .utils.list_iterator import ListIterator
 
 from .auth import FLOWS, Token
 from .http import HTTPClient
+from .track import Track
 from .user import ClientUser
 
 
@@ -41,3 +45,11 @@ class Client:
 
     async def me(self) -> ClientUser:
         return ClientUser(self._http, await self._http.fetch_me())
+
+    def fetch_tracks(self, *track_ids: List[str]) -> ListIterator[Track]:
+        async def gen():
+            for chunk in Chunked(track_ids, 50):
+                for track in await self._http.get_tracks(chunk):
+                    yield Track(self._http, track)
+
+        return ListIterator(gen())

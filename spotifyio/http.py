@@ -103,3 +103,11 @@ class HTTPClient:
     async def fetch_me(self):
         route = Route("GET", "/me")
         return await self.request(route)
+
+    # Tracks
+
+    async def get_tracks(self, track_ids: List[str]):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks"""
+        route = Route("GET", "/tracks", ids=",".join(track_ids))
+        data = await self.request(route)
+        return data["tracks"]
