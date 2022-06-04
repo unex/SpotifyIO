@@ -2,9 +2,10 @@ from typing import List
 
 from .http import HTTPClient
 from .asset import Asset
+from .mixins import Url
 
 
-class User:
+class User(Url):
     def __init__(self, http: HTTPClient, data: dict) -> None:
         self._http = http
 
