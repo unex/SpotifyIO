@@ -3,7 +3,7 @@ from typing import List
 from .utils.time import fromspotifyiso
 
 from .http import HTTPClient
-from .artist import Artist
+from .artist import PartialArtist
 from .album import Album
 from .mixins import Url
 
@@ -35,7 +35,9 @@ class Track(Url):
         self.external_urls: dict = data["external_urls"]
         self.name: str = data["name"]
         self.album: Album = Album(self._http, data["album"])
-        self.artists: List[Artist] = [Artist(self._http, a) for a in data["artists"]]
+        self.artists: List[PartialArtist] = [
+            PartialArtist(self._http, a) for a in data["artists"]
+        ]
         self.markets: List[str] = data["available_markets"]
         self.local: bool = data["is_local"]
         self.popularity: int = data["popularity"]

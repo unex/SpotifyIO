@@ -5,6 +5,23 @@ from .asset import Asset
 from .mixins import Url
 
 
+class PartialArtist(Url):
+    __slots__ = (
+        "id",
+        "uri",
+        "external_urls",
+        "name",
+    )
+
+    def __init__(self, http: HTTPClient, data: dict) -> None:
+        self._http = http
+
+        self.id: str = data["id"]
+        self.uri: str = data["uri"]
+        self.external_urls: dict = data["external_urls"]
+        self.name: str = data["name"]
+
+
 class Artist(Url):
     __slots__ = (
         "id",
