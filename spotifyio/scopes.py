@@ -41,3 +41,8 @@ class Scopes:
         for k in self.__slots__:
             if getattr(self, k) == True:
                 yield k.replace("_", "-")
+
+    @classmethod
+    def all(cls):
+        """A factory method that creates a :class:`Scopes` with everything enabled."""
+        return cls(**{attr: True for attr in cls.__slots__})
