@@ -8,6 +8,7 @@ from .utils.list_iterator import ListIterator
 
 from .auth import FLOWS, Token
 from .http import HTTPClient
+from .artist import Artist
 from .track import Track
 from .user import ClientUser
 
@@ -45,6 +46,14 @@ class Client:
 
     async def me(self) -> ClientUser:
         return ClientUser(self._http, await self._http.fetch_me())
+
+    def fetch_artists(self, *artist_ids: List[str]) -> ListIterator[Artist]:
+        async def gen():
+            for chunk in Chunked(artist_ids, 50):
+                for artist in await self._http.get_artists(chunk):
+                    yield Artist(self._http, artist)
+
+        return ListIterator(gen())
 
     def fetch_tracks(self, *track_ids: List[str]) -> ListIterator[Track]:
         async def gen():
