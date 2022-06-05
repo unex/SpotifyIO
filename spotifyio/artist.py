@@ -80,7 +80,9 @@ class Artist(Url):
 
     def top_tracks(self, country: str = "US") -> ListIterator["Track"]:
         async def gen():
-            for data in await self._state.http.get_artist_top_tracks(self.id, country_code=country):
+            for data in await self._state.http.get_artist_top_tracks(
+                self.id, country_code=country
+            ):
                 yield self._state.track(data)
 
         return ListIterator(gen())
