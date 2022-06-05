@@ -37,38 +37,58 @@ class ClientUserAlbums(ListIterator["Album"]):
 
 class User(Url):
     __slots__ = (
-        "_followers",
+        "_state" "_followers",
         "id",
         "uri",
         "external_urls",
         "display_name",
         "images",
+    )
+
+    if TYPE_CHECKING:
+        id: str
+        uri: str
+        external_urls: dict
+        display_name: str
+        images: List[Asset]
+        email: Optional[str]
+        country: Optional[str]
+        product: Optional[str]
+        explicit_content: Optional[dict]
+
+    def __init__(self, state, data: dict) -> None:
+        self._state: State = state
+        self._update(data)
+
+    def _update(self, data: dict) -> None:
+        self.id = data["id"]
+        self.uri = data["uri"]
+        self.external_urls = data["external_urls"]
+        self.display_name = data["display_name"]
+
+        self._followers = data.get("followers")
+
+        if "images" in data:
+            self.images = [Asset(**a) for a in data["images"]]
+        else:
+            self.images = None
+
+
+class ClientUser(User):
+    __slots__ = (
         "email",
         "country",
         "product",
         "explicit_content",
     )
 
-    def __init__(self, state, data: dict) -> None:
-        self._state: State = state
+    def _update(self, data: dict) -> None:
+        super()._update(data)
 
-        self.id: str = data["id"]
-        self.uri: str = data["uri"]
-        self.external_urls: dict = data["external_urls"]
-        self.display_name: str = data["display_name"]
-        self._followers = data["followers"]
-        self.images: List[Asset] = [Asset(**a) for a in data["images"]]
-
-        self.email: Optional[str] = data.get("email")  # user-read-email
-        self.country: Optional[str] = data.get("country")  # user-read-private
-        self.product: Optional[str] = data.get("product")  # user-read-private
-        self.explicit_content: Optional[dict] = data.get(
-            "explicit_content"
-        )  # user-read-private
-
-
-class ClientUser(User):
-    __slots__ = ()
+        self.email = data.get("email")  # user-read-email
+        self.country = data.get("country")  # user-read-private
+        self.product = data.get("product")  # user-read-private
+        self.explicit_content = data.get("explicit_content")  # user-read-private
 
     @property
     def albums(self, market: str = None) -> ClientUserAlbums["Album"]:
