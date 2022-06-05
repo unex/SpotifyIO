@@ -173,6 +173,12 @@ class HTTPClient:
         )
         return await self.request(route)
 
+    async def get_artist_top_tracks(self, artist_id: str, *, country_code: str):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-top-tracks"""
+        route = Route("GET", f"/artists/{artist_id}/top-tracks", country=country_code)
+        data = await self.request(route)
+        return data["tracks"]
+
     # Tracks
 
     async def get_track(self, track_id: str):

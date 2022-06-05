@@ -9,6 +9,7 @@ from .mixins import Url
 if TYPE_CHECKING:
     from .state import State
     from .album import Album
+    from .track import Track
 
 __all__ = ("Artist",)
 
@@ -74,6 +75,13 @@ class Artist(Url):
                 self._state.http.get_artist_albums, self.id, include=include
             ):
                 yield self._state.album(data)
+
+        return ListIterator(gen())
+
+    def top_tracks(self, country: str = "US") -> ListIterator["Track"]:
+        async def gen():
+            for data in await self._state.http.get_artist_top_tracks(self.id, country_code=country):
+                yield self._state.track(data)
 
         return ListIterator(gen())
 
