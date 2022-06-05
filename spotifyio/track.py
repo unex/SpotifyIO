@@ -10,6 +10,9 @@ if TYPE_CHECKING:
     from .artist import Artist
 
 
+__all__ = ("Track", "ListTrack")
+
+
 class Track(Url):
     __slots__ = (
         "_state",

@@ -6,6 +6,8 @@ from .mixins import Url
 if TYPE_CHECKING:
     from .state import State
 
+__all__ = ("Artist",)
+
 
 class Artist(Url):
     __slots__ = (
