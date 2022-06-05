@@ -5,7 +5,7 @@ from .utils.paginator import Paginator
 from .utils.list_iterator import ListIterator
 
 from .asset import Asset
-from .mixins import Url
+from .mixins import Url, Followable
 
 if TYPE_CHECKING:
     from .state import State
@@ -37,11 +37,11 @@ class ClientUserAlbums(ListIterator["Album"]):
 
 class User(Url):
     __slots__ = (
+        "_followers",
         "id",
         "uri",
         "external_urls",
         "display_name",
-        "followers",
         "images",
         "email",
         "country",
@@ -56,7 +56,7 @@ class User(Url):
         self.uri: str = data["uri"]
         self.external_urls: dict = data["external_urls"]
         self.display_name: str = data["display_name"]
-        self.followers: int = data["followers"]["total"]
+        self._followers = data["followers"]
         self.images: List[Asset] = [Asset(**a) for a in data["images"]]
 
         self.email: Optional[str] = data.get("email")  # user-read-email

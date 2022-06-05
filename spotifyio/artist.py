@@ -4,7 +4,7 @@ from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 
 from .asset import Asset
-from .mixins import Url
+from .mixins import Url, Followable
 
 if TYPE_CHECKING:
     from .state import State
@@ -14,14 +14,14 @@ if TYPE_CHECKING:
 __all__ = ("Artist",)
 
 
-class Artist(Url):
+class Artist(Url, Followable):
     __slots__ = (
         "_state",
+        "_followers",
         "id",
         "uri",
         "external_urls",
         "name",
-        "followers",
         "genres",
         "images",
         "popularity",
@@ -33,7 +33,6 @@ class Artist(Url):
         external_urls: dict
         name: str
         genres: List[str]
-        followers: int
         images: List[Asset]
         popularity: int
 
@@ -47,11 +46,7 @@ class Artist(Url):
         self.external_urls = data["external_urls"]
         self.name = data["name"]
 
-        if "followers" in data:
-            self.followers = data["followers"]["total"]
-        else:
-            self.followers = None
-
+        self._followers = data.get("followers")
         self.genres = data.get("genres")
 
         if "images" in data:
