@@ -45,6 +45,9 @@ class Track(Url):
 
     def __init__(self, state, data: dict) -> None:
         self._state: State = state
+        self._update(data)
+
+    def _update(self, data: dict):
         self.id = data["id"]
         self.uri = data["uri"]
         self.external_urls = data["external_urls"]
@@ -61,6 +64,9 @@ class Track(Url):
 
         self.markets = data.get("available_markets")
         self.popularity = data.get("popularity")
+
+    async def fetch(self) -> None:
+        self._update(await self._state.http.get_track(self.id))
 
     def __repr__(self) -> str:
         attrs = " ".join(f"{name}={getattr(self, name)}" for name in ["id", "name"])

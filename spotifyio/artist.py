@@ -32,6 +32,9 @@ class Artist(Url):
 
     def __init__(self, state, data: dict) -> None:
         self._state: State = state
+        self._update(data)
+
+    def _update(self, data: dict):
         self.id = data["id"]
         self.uri = data["uri"]
         self.external_urls = data["external_urls"]
@@ -50,6 +53,9 @@ class Artist(Url):
             self.images = None
 
         self.popularity = data.get("popularity")
+
+    async def fetch(self) -> None:
+        self._update(await self._state.http.get_artist(self.id))
 
     def __repr__(self) -> str:
         attrs = " ".join(f"{name}={getattr(self, name)}" for name in ["id", "name"])
