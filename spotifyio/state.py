@@ -14,6 +14,7 @@ OBJ_MAPPING = {
     "artist": Artist,
 }
 
+
 class State:
     __slots__ = ("http",)
 
@@ -23,7 +24,7 @@ class State:
     def objectify(self, data: dict):
 
         # is a listing
-        if 'added_at' in data:
+        if "added_at" in data:
             _type = "list_" + list(data.keys())[1]
         else:
             _type = data["type"]
