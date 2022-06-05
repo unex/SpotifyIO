@@ -1,6 +1,6 @@
 from .http import HTTPClient
 
-from .album import Album
+from .album import Album, ListAlbum
 from .artist import Artist
 from .track import Track
 
@@ -13,6 +13,9 @@ class State:
 
     def album(self, data: dict):
         return Album(self, data)
+
+    def list_album(self, data: dict):
+        return ListAlbum(self, data)
 
     def artist(self, data: dict):
         return Artist(self, data)

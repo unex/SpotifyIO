@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, List, Literal
 from .asset import Asset
 from .mixins import Url
 
+from .utils.time import fromspotifyiso
 from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 
@@ -103,3 +104,12 @@ class Album(Url):
     def __repr__(self) -> str:
         attrs = " ".join(f"{name}={getattr(self, name)}" for name in ["id", "name"])
         return f"<{self.__class__.__qualname__} {attrs}>"
+
+
+class ListAlbum(Album):
+    __slots__ = ("added_at",)
+
+    def __init__(self, state, data: dict) -> None:
+        super().__init__(state, data["album"])
+
+        self.added_at = fromspotifyiso(data["added_at"])
