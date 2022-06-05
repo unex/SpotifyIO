@@ -117,6 +117,11 @@ class HTTPClient:
         data = await self.request(route)
         return data["albums"]
 
+    async def get_album_tracks(self, album_id: str, **kwargs):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-albums-tracks"""
+        route = Route("GET", f"/albums/{album_id}/tracks", **kwargs)
+        return await self.request(route)
+
     # Artists
 
     async def get_artist(self, artist_id: str):

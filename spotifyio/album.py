@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING, List, Literal
 from .asset import Asset
 from .mixins import Url
 
+from .utils.list_iterator import ListIterator
+from .utils.paginator import Paginator
+
 if TYPE_CHECKING:
     from .state import State
     from .artist import Artist
@@ -13,15 +16,22 @@ if TYPE_CHECKING:
 __all__ = ("Album",)
 
 
+class AlbumTracks(ListIterator["Track"]):
+    def __init__(self, state, *args, **kwargs) -> None:
+        self._state = state
+
+        super().__init__(*args, **kwargs)
+
+
 class Album(Url):
     __slots__ = (
         "_state",
+        "_tracks",
         "id",
         "uri",
         "external_urls",
         "name",
         "type",
-        "tracks",
         "artists",
         "available_markets",
         "images",
@@ -40,7 +50,6 @@ class Album(Url):
         external_urls: dict
         name: str
         type: Literal["album", "single", "compilation"]
-        tracks: List[Track]
         artists: List[Artist]
         markets: List[str]
         images: List[Asset]
@@ -68,16 +77,22 @@ class Album(Url):
         self.release_date = date.fromisoformat(data["release_date"])
         self.total_tracks = data["total_tracks"]
 
-        if "tracks" in data:
-            self.tracks = [self._state.track(t) for t in data["tracks"]["items"]]
-        else:
-            self.tracks = None
-
+        self._tracks = data.get("tracks")
         self.copyrights = data.get("copyrights")
         self.external_ids = data.get("external_ids")
         self.genres = data.get("genres")
         self.label = data.get("label")
         self.popularity = data.get("popularity")
+
+    @property
+    def tracks(self) -> AlbumTracks["Track"]:
+        async def gen():
+            async for data in Paginator(
+                self._state.http.get_album_tracks, self.id, _data=self._tracks
+            ):
+                yield self._state.track(data)
+
+        return AlbumTracks(self._state, gen())
 
     async def fetch(self):
         self._update(await self._state.http.get_album(self.id))
