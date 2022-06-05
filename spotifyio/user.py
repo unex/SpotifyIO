@@ -50,7 +50,7 @@ class User(Url):
     )
 
     def __init__(self, state, data: dict) -> None:
-        self._state = state
+        self._state: State = state
 
         self.id: str = data["id"]
         self.uri: str = data["uri"]
