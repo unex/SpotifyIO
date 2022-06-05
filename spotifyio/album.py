@@ -16,13 +16,6 @@ if TYPE_CHECKING:
 __all__ = ("Album",)
 
 
-class AlbumTracks(ListIterator["Track"]):
-    def __init__(self, state, *args, **kwargs) -> None:
-        self._state = state
-
-        super().__init__(*args, **kwargs)
-
-
 class Album(Url):
     __slots__ = (
         "_state",
@@ -85,14 +78,14 @@ class Album(Url):
         self.popularity = data.get("popularity")
 
     @property
-    def tracks(self) -> AlbumTracks["Track"]:
+    def tracks(self) -> ListIterator["Track"]:
         async def gen():
             async for data in Paginator(
                 self._state.http.get_album_tracks, self.id, _data=self._tracks
             ):
                 yield self._state.track(data)
 
-        return AlbumTracks(self._state, gen())
+        return ListIterator(gen())
 
     async def fetch(self):
         self._update(await self._state.http.get_album(self.id))
