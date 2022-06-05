@@ -90,8 +90,15 @@ class Client:
     async def fetch_playlist(self, playlist_id: str) -> Playlist:
         return self._state.objectify(await self._http.get_playlist(playlist_id))
 
-    def new_album_releases(self, country: str = "US") -> ListIterator[Album]:
+    def new_album_releases(self, country: str = None) -> ListIterator[Album]:
         async def gen():
+            async for data in Paginator(
+                self._http.get_browse_new_releases, country_code=country
+            ):
+                yield self._state.objectify(data)
+
+        return ListIterator(gen())
+
     def featured_playlists(self, country: str = None) -> ListIterator[Playlist]:
         async def gen():
             async for data in Paginator(

@@ -147,7 +147,10 @@ class HTTPClient:
 
     async def get_browse_new_releases(self, country_code: str, **kwargs):
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-new-releases"""
-        route = Route("GET", "/browse/new-releases", country=country_code, **kwargs)
+        if country_code:
+            kwargs["country"] = country_code
+
+        route = Route("GET", "/browse/new-releases", **kwargs)
         data = await self.request(route)
         return data["albums"]
 
