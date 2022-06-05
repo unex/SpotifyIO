@@ -197,3 +197,137 @@ class HTTPClient:
         route = Route("GET", "/tracks", ids=",".join(track_ids))
         data = await self.request(route)
         return data["tracks"]
+
+    # Playlists
+
+    async def get_playlist(self, playlist_id: str):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist"""
+        route = Route("GET", f"/playlists/{playlist_id}")
+        return await self.request(route)
+
+    async def put_playlist(
+        self,
+        playlist_id: str,
+        *,
+        name: str,
+        description: str,
+        public: bool,
+        collaborative: bool,
+    ):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/change-playlist-details"""
+        data = {}
+
+        if name:
+            data["name"] = name
+        if description:
+            data["description"] = description
+        if public:
+            data["public"] = public
+        if collaborative:
+            data["collaborative"] = collaborative
+
+        route = Route("PUT", f"/playlists/{playlist_id}")
+        return await self.request(route, json=data)
+
+    async def get_playlist_tracks(self, playlist_id: str, **kwargs):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks"""
+        route = Route("GET", f"/playlists/{playlist_id}/tracks", **kwargs)
+        return await self.request(route)
+
+    async def post_playlist_tracks(
+        self, playlist_id: str, *, uris: List[str], position: int
+    ):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/add-tracks-to-playlist"""
+        query = {
+            "uris": ",".join(uris),
+        }
+
+        if position is not None:
+            query["position"] = position
+
+        route = Route("POST", f"/playlists/{playlist_id}/tracks", **query)
+        data = await self.request(route)
+        return data["snapshot_id"]
+
+    async def put_playlist_tracks(
+        self,
+        playlist_id: str,
+        *,
+        uris: List[str],
+        range_start: int,
+        insert_before: int,
+        range_length: int,
+        snapshot_id: str,
+    ):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/reorder-or-replace-playlists-tracks"""
+        raise NotImplementedError()
+
+    async def delete_playlist_tracks(
+        self, playlist_id: str, *, uris: List[str], snapshot_id: str
+    ):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist"""
+        route = Route("DELETE", f"/playlists/{playlist_id}/tracks")
+        return await self.request(
+            route,
+            json={
+                "tracks": list(map(lambda x: {"uri": x}, uris)),
+                "snapshot_id": snapshot_id,
+            },
+        )
+
+    async def get_me_playlists(self, **kwargs):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists"""
+        route = Route("GET", "/me/playlists", **kwargs)
+        return await self.request(route)
+
+    async def get_user_playlists(self, user_id: str, **kwargs):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-list-users-playlists"""
+        route = Route("GET", f"/users/{user_id}/playlists", **kwargs)
+        return await self.request(route)
+
+    async def post_user_playlists(
+        self,
+        user_id: str,
+        *,
+        name: str,
+        description: str,
+        public: bool,
+        collaborative: bool,
+    ):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/create-playlist"""
+        data = {
+            "name": name,
+            "public": public,
+            "collaborative": collaborative,
+        }
+
+        if description:
+            data["description"] = description
+
+        route = Route("POST", f"/users/{user_id}/playlists")
+        return await self.request(route, json=data)
+
+    async def get_browse_featured_playlists(self, *, country_code: str, **kwargs):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists"""
+        if country_code:
+            kwargs["country"] = country_code
+
+        route = Route("GET", "/browse/featured-playlists", **kwargs)
+        data = await self.request(route)
+        return data["playlists"]
+
+    async def get_browse_category_playlists(
+        self, category: str, *, country_code: str, **kwargs
+    ):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-categories-playlists"""
+        if country_code:
+            kwargs["country"] = country_code
+
+        route = Route("GET", f"/browse/categories/{category}/playlists", **kwargs)
+        data = await self.request(route)
+        return data["playlists"]
+
+    async def put_playlist_image(self, playlist_id, *, image: bytes):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/upload-custom-playlist-cover"""
+        route = Route("PUT", f"/playlists/{playlist_id}/images")
+        await self.request(route, data=b64encode(image))

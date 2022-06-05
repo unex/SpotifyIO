@@ -13,6 +13,7 @@ from .state import State
 
 from .album import Album
 from .artist import Artist
+from .playlist import Playlist
 from .track import Track
 from .user import ClientUser
 
@@ -86,9 +87,16 @@ class Client:
 
         return ListIterator(gen())
 
+    async def fetch_playlist(self, playlist_id: str) -> Playlist:
+        return self._state.objectify(await self._http.get_playlist(playlist_id))
+
     def new_album_releases(self, country: str = "US") -> ListIterator[Album]:
         async def gen():
-            async for data in Paginator(self._http.get_browse_new_releases, country):
+    def featured_playlists(self, country: str = None) -> ListIterator[Playlist]:
+        async def gen():
+            async for data in Paginator(
+                self._http.get_browse_featured_playlists, country_code=country
+            ):
                 yield self._state.objectify(data)
 
         return ListIterator(gen())

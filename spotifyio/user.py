@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .state import State
     from .album import Album
     from .artist import Artist
+    from .playlist import Playlist
     from .track import Track, ListTrack
 
 
@@ -70,6 +71,14 @@ class User(Url, Followable):
         else:
             self.images = None
 
+    @property
+    def playlists(self) -> ListIterator["Playlist"]:
+        async def gen():
+            async for data in Paginator(self._state.http.get_user_playlists, self.id):
+                yield self._state.objectify(data)
+
+        return ListIterator(gen())
+
     def __repr__(self) -> str:
         attrs = " ".join(
             f"{name}={getattr(self, name)}" for name in ["id", "display_name"]
@@ -106,3 +115,29 @@ class ClientUser(User):
                 yield self._state.objectify(data)
 
         return ClientUserAlbums(self._state, gen())
+
+    @property
+    def playlists(self) -> ListIterator["Playlist"]:
+        async def gen():
+            async for data in Paginator(self._state.http.get_me_playlists):
+                yield self._state.objectify(data)
+
+        return ListIterator(gen())
+
+    async def create_playlist(
+        self,
+        name: str,
+        description: str = None,
+        public: bool = True,
+        collaborative: bool = False,
+    ) -> "Playlist":
+        return self._state.objectify(
+            await self._state.http.post_user_playlists(
+                self.id,
+                name=name,
+                description=description,
+                public=public,
+                collaborative=collaborative,
+            )
+        )
+

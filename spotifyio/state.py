@@ -2,6 +2,7 @@ from .http import HTTPClient
 
 from .album import Album, ListAlbum
 from .artist import Artist
+from .playlist import Playlist
 from .track import Track, ListTrack
 from .user import User
 
@@ -12,6 +13,7 @@ OBJ_MAPPING = {
     "album": Album,
     "list_album": ListAlbum,
     "artist": Artist,
+    "playlist": Playlist,
 }
 
 
