@@ -97,7 +97,6 @@ class HTTPClient:
 
         self.__session = aiohttp.ClientSession(
             connector=self.connector,
-            json_serialize=orjson.dumps,
         )
 
     async def close(self):
