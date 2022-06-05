@@ -59,7 +59,10 @@ class HTTPClient:
                 async with self.__session.request(
                     method, url, params=route.query, **kwargs
                 ) as response:
-                    data = orjson.loads(await response.text())
+                    if text := await response.text():
+                        data = orjson.loads(text)
+                    else:
+                        data = None
 
                     # TODO: ratelimiting
 
