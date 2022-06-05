@@ -87,6 +87,13 @@ class Artist(Url):
 
         return ListIterator(gen())
 
+    def related(self) -> ListIterator["Artist"]:
+        async def gen():
+            for data in await self._state.http.get_artist_related(self.id):
+                yield self._state.artist(data)
+
+        return ListIterator(gen())
+
     async def fetch(self) -> None:
         self._update(await self._state.http.get_artist(self.id))
 
