@@ -35,9 +35,10 @@ class ClientUserAlbums(ListIterator["Album"]):
             )
 
 
-class User(Url):
+class User(Url, Followable):
     __slots__ = (
-        "_state" "_followers",
+        "_state",
+        "_followers",
         "id",
         "uri",
         "external_urls",
@@ -51,10 +52,6 @@ class User(Url):
         external_urls: dict
         display_name: str
         images: List[Asset]
-        email: Optional[str]
-        country: Optional[str]
-        product: Optional[str]
-        explicit_content: Optional[dict]
 
     def __init__(self, state, data: dict) -> None:
         self._state: State = state
@@ -63,15 +60,21 @@ class User(Url):
     def _update(self, data: dict) -> None:
         self.id = data["id"]
         self.uri = data["uri"]
-        self.external_urls = data["external_urls"]
-        self.display_name = data["display_name"]
 
+        self.external_urls = data.get("external_urls")
+        self.display_name = data.get("display_name")
         self._followers = data.get("followers")
 
         if "images" in data:
             self.images = [Asset(**a) for a in data["images"]]
         else:
             self.images = None
+
+    def __repr__(self) -> str:
+        attrs = " ".join(
+            f"{name}={getattr(self, name)}" for name in ["id", "display_name"]
+        )
+        return f"<{self.__class__.__qualname__} {attrs}>"
 
 
 class ClientUser(User):
@@ -81,6 +84,12 @@ class ClientUser(User):
         "product",
         "explicit_content",
     )
+
+    if TYPE_CHECKING:
+        email: Optional[str]
+        country: Optional[str]
+        product: Optional[str]
+        explicit_content: Optional[dict]
 
     def _update(self, data: dict) -> None:
         super()._update(data)
