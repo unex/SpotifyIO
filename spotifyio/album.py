@@ -67,7 +67,17 @@ class Album(Url):
         self.artists = [self._state.artist(a) for a in data["artists"]]
         self.markets = data["available_markets"]
         self.images = [Asset(**a) for a in data["images"]]
-        self.release_date = date.fromisoformat(data["release_date"])
+
+        # implement custom type for this mayhaps?
+        release_date = data["release_date"]
+        precis = data["release_date_precision"]
+        if precis == "year":
+            self.release_date = date.fromisoformat(f"{release_date}-01-01")
+        elif precis == "month":
+            self.release_date = date.fromisoformat(f"{release_date}-01")
+        else:
+            self.release_date = date.fromisoformat(release_date)
+
         self.total_tracks = data["total_tracks"]
 
         self._tracks = data.get("tracks")
