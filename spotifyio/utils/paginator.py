@@ -13,7 +13,7 @@ class Paginator:
         self.count: int = 0
         self.data: list = []
 
-        if _data := kwargs.pop("_data"):
+        if _data := kwargs.get("_data"):
             self.data = _data["items"]
             self._total = _data["total"]
 
