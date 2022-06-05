@@ -66,7 +66,6 @@ class Album(Url):
         self.name = data["name"]
         self.type = data["album_type"]
         self.artists = [self._state.artist(a) for a in data["artists"]]
-        self.markets = data["available_markets"]
         self.images = [Asset(**a) for a in data["images"]]
 
         # implement custom type for this mayhaps?
@@ -81,6 +80,7 @@ class Album(Url):
 
         self.total_tracks = data["total_tracks"]
 
+        self.markets = data.get("available_markets")
         self._tracks = data.get("tracks")
         self.copyrights = data.get("copyrights")
         self.external_ids = data.get("external_ids")
