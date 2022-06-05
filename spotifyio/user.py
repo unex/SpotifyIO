@@ -1,9 +1,13 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from .http import HTTPClient
 from .asset import Asset
 from .mixins import Url
 
+if TYPE_CHECKING:
+    from .state import State
+    from .artist import Artist
+    from .track import Track, ListTrack
 
 class User(Url):
     __slots__ = (
@@ -19,8 +23,8 @@ class User(Url):
         "explicit_content",
     )
 
-    def __init__(self, http: HTTPClient, data: dict) -> None:
-        self._http = http
+    def __init__(self, state, data: dict) -> None:
+        self._state = state
 
         self.id: str = data["id"]
         self.uri: str = data["uri"]

@@ -50,7 +50,7 @@ class Client:
         return self._http.auth.token
 
     async def me(self) -> ClientUser:
-        return ClientUser(self._http, await self._http.fetch_me())
+        return ClientUser(self._state, await self._http.fetch_me())
 
     async def fetch_album(self, album_id: str) -> Album:
         return self._state.album(await self._http.get_album(album_id))
