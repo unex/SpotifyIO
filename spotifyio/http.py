@@ -125,6 +125,26 @@ class HTTPClient:
         route = Route("GET", f"/albums/{album_id}/tracks", **kwargs)
         return await self.request(route)
 
+    async def get_me_albums(self, **kwargs):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-albums"""
+        route = Route("GET", "/me/albums", **kwargs)
+        return await self.request(route)
+
+    async def put_me_albums(self, album_ids=List[str]):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/save-albums-user"""
+        route = Route("PUT", "/me/albums", ids=",".join(album_ids))
+        await self.request(route)
+
+    async def delete_me_albums(self, album_ids=List[str]):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-albums-user"""
+        route = Route("DELETE", "/me/albums", ids=",".join(album_ids))
+        await self.request(route)
+
+    async def get_me_albums_contains(self, album_ids: List[str]):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-albums"""
+        route = Route("GET", "/me/albums/contains", ids=",".join(album_ids))
+        return await self.request(route)
+
     # Artists
 
     async def get_artist(self, artist_id: str):

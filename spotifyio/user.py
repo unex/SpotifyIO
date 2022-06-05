@@ -1,13 +1,39 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Iterable, List, Optional
 
-from .http import HTTPClient
+from .utils.chunked import Chunked
+from .utils.paginator import Paginator
+from .utils.list_iterator import ListIterator
+
 from .asset import Asset
 from .mixins import Url
 
 if TYPE_CHECKING:
     from .state import State
+    from .album import Album
     from .artist import Artist
     from .track import Track, ListTrack
+
+
+class ClientUserAlbums(ListIterator["Album"]):
+    def __init__(self, state, *args, **kwargs) -> None:
+        self._state: State = state
+
+        super().__init__(*args, **kwargs)
+
+    async def save(self, *albums: Iterable["Album"]) -> None:
+        for chunk in Chunked(albums, 20):
+            await self._state.http.put_me_albums(list(map(lambda x: x.id, chunk)))
+
+    async def remove(self, *albums: Iterable["Album"]) -> None:
+        for chunk in Chunked(albums, 20):
+            await self._state.http.delete_me_albums(list(map(lambda x: x.id, chunk)))
+
+    async def contains(self, *albums: Iterable["Album"]) -> List[bool]:
+        for chunk in Chunked(albums, 20):
+            return await self._state.http.get_me_albums_contains(
+                list(map(lambda x: x.id, chunk))
+            )
+
 
 class User(Url):
     __slots__ = (
@@ -44,3 +70,10 @@ class User(Url):
 class ClientUser(User):
     __slots__ = ()
 
+    @property
+    def albums(self, market: str = None) -> ClientUserAlbums["Album"]:
+        async def gen():
+            async for data in Paginator(self._state.http.get_me_albums):
+                yield self._state.list_album(data)
+
+        return ClientUserAlbums(self._state, gen())
