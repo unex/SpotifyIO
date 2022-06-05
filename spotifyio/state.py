@@ -25,11 +25,15 @@ class State:
 
         # is a listing
         if "added_at" in data:
-            _type = "list_" + list(data.keys())[1]
+            for key in list(data.keys()):
+                if key in OBJ_MAPPING:
+                    _type = f"list_{key}"
+                    break
+
         else:
             _type = data["type"]
 
-        try:
-            return OBJ_MAPPING[_type](self, data)
-        except KeyError:
+        if _type not in OBJ_MAPPING:
             raise NotImplementedError(f"{_type} not supported in State.objectify")
+
+        return OBJ_MAPPING[_type](self, data)
