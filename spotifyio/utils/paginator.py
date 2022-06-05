@@ -12,6 +12,10 @@ class Paginator:
         self.count: int = 0
         self.data: list = []
 
+        if _data := kwargs.pop("_data"):
+            self.data = _data["items"]
+            self.count = len(self.data)
+
         self._args = args
         self._kwargs = kwargs
 
