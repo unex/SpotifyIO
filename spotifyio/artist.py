@@ -74,7 +74,7 @@ class Artist(Url):
             async for data in Paginator(
                 self._state.http.get_artist_albums, self.id, include=include
             ):
-                yield self._state.album(data)
+                yield self._state.objectify(data)
 
         return ListIterator(gen())
 
@@ -83,14 +83,14 @@ class Artist(Url):
             for data in await self._state.http.get_artist_top_tracks(
                 self.id, country_code=country
             ):
-                yield self._state.track(data)
+                yield self._state.objectify(data)
 
         return ListIterator(gen())
 
     def related(self) -> ListIterator["Artist"]:
         async def gen():
             for data in await self._state.http.get_artist_related(self.id):
-                yield self._state.artist(data)
+                yield self._state.objectify(data)
 
         return ListIterator(gen())
 

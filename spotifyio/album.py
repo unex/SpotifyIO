@@ -65,7 +65,7 @@ class Album(Url):
         self.external_urls = data["external_urls"]
         self.name = data["name"]
         self.type = data["album_type"]
-        self.artists = [self._state.artist(a) for a in data["artists"]]
+        self.artists = [self._state.objectify(a) for a in data["artists"]]
         self.images = [Asset(**a) for a in data["images"]]
 
         # implement custom type for this mayhaps?
@@ -94,7 +94,7 @@ class Album(Url):
             async for data in Paginator(
                 self._state.http.get_album_tracks, self.id, _data=self._tracks
             ):
-                yield self._state.track(data)
+                yield self._state.objectify(data)
 
         return ListIterator(gen())
 

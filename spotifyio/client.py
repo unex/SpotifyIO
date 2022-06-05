@@ -54,41 +54,41 @@ class Client:
         return ClientUser(self._state, await self._http.fetch_me())
 
     async def fetch_album(self, album_id: str) -> Album:
-        return self._state.album(await self._http.get_album(album_id))
+        return self._state.objectify(await self._http.get_album(album_id))
 
     def fetch_albums(self, *album_ids: List[str]) -> ListIterator[Album]:
         async def gen():
             for chunk in Chunked(album_ids, 50):
                 for album in await self._http.get_albums(chunk):
-                    yield self._state.album(album)
+                    yield self._state.objectify(album)
 
         return ListIterator(gen())
 
     async def fetch_artist(self, artist_id: str) -> Artist:
-        return self._state.artist(await self._http.get_artist(artist_id))
+        return self._state.objectify(await self._http.get_artist(artist_id))
 
     def fetch_artists(self, *artist_ids: List[str]) -> ListIterator[Artist]:
         async def gen():
             for chunk in Chunked(artist_ids, 50):
                 for artist in await self._http.get_artists(chunk):
-                    yield self._state.artist(artist)
+                    yield self._state.objectify(artist)
 
         return ListIterator(gen())
 
     async def fetch_track(self, track_id: str) -> Track:
-        return self._state.track(await self._http.get_track(track_id))
+        return self._state.objectify(await self._http.get_track(track_id))
 
     def fetch_tracks(self, *track_ids: List[str]) -> ListIterator[Track]:
         async def gen():
             for chunk in Chunked(track_ids, 50):
                 for track in await self._http.get_tracks(chunk):
-                    yield self._state.track(track)
+                    yield self._state.objectify(track)
 
         return ListIterator(gen())
 
     def new_album_releases(self, country: str = "US") -> ListIterator[Album]:
         async def gen():
             async for data in Paginator(self._http.get_browse_new_releases, country):
-                yield self._state.album(data)
+                yield self._state.objectify(data)
 
         return ListIterator(gen())

@@ -74,6 +74,6 @@ class ClientUser(User):
     def albums(self, market: str = None) -> ClientUserAlbums["Album"]:
         async def gen():
             async for data in Paginator(self._state.http.get_me_albums):
-                yield self._state.list_album(data)
+                yield self._state.objectify(data)
 
         return ClientUserAlbums(self._state, gen())

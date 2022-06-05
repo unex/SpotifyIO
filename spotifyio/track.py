@@ -55,13 +55,13 @@ class Track(Url):
         self.uri = data["uri"]
         self.external_urls = data["external_urls"]
         self.name = data["name"]
-        self.artists = [self._state.artist(a) for a in data["artists"]]
+        self.artists = [self._state.objectify(a) for a in data["artists"]]
         self.local = data["is_local"]
         self.preview_url = data["preview_url"]
         self.track_number = data["track_number"]
 
         if "album" in data:
-            self.album = self._state.album(data["album"])
+            self.album = self._state.objectify(data["album"])
         else:
             self.album = None
 

@@ -2,8 +2,17 @@ from .http import HTTPClient
 
 from .album import Album, ListAlbum
 from .artist import Artist
-from .track import Track
+from .track import Track, ListTrack
+from .user import User
 
+OBJ_MAPPING = {
+    "user": User,
+    "track": Track,
+    "list_track": ListTrack,
+    "album": Album,
+    "list_album": ListAlbum,
+    "artist": Artist,
+}
 
 class State:
     __slots__ = ("http",)
@@ -11,14 +20,15 @@ class State:
     def __init__(self, http: HTTPClient) -> None:
         self.http = http
 
-    def album(self, data: dict):
-        return Album(self, data)
+    def objectify(self, data: dict):
 
-    def list_album(self, data: dict):
-        return ListAlbum(self, data)
+        # is a listing
+        if 'added_at' in data:
+            _type = "list_" + list(data.keys())[1]
+        else:
+            _type = data["type"]
 
-    def artist(self, data: dict):
-        return Artist(self, data)
-
-    def track(self, data: dict):
-        return Track(self, data)
+        try:
+            return OBJ_MAPPING[_type](self, data)
+        except KeyError:
+            raise NotImplementedError(f"{_type} not supported in State.objectify")
