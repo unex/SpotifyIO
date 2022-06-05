@@ -4,6 +4,7 @@ from typing import List, Optional, Type, Any
 from types import TracebackType
 
 from .utils.chunked import Chunked
+from .utils.paginator import Paginator
 from .utils.list_iterator import ListIterator
 
 from .auth import FLOWS, Token
@@ -82,5 +83,12 @@ class Client:
             for chunk in Chunked(track_ids, 50):
                 for track in await self._http.get_tracks(chunk):
                     yield self._state.track(track)
+
+        return ListIterator(gen())
+
+    def new_album_releases(self, country: str = "US") -> ListIterator[Album]:
+        async def gen():
+            async for data in Paginator(self._http.get_browse_new_releases, country):
+                yield self._state.album(data)
 
         return ListIterator(gen())

@@ -145,6 +145,12 @@ class HTTPClient:
         route = Route("GET", "/me/albums/contains", ids=",".join(album_ids))
         return await self.request(route)
 
+    async def get_browse_new_releases(self, country_code: str, **kwargs):
+        """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-new-releases"""
+        route = Route("GET", "/browse/new-releases", country=country_code, **kwargs)
+        data = await self.request(route)
+        return data["albums"]
+
     # Artists
 
     async def get_artist(self, artist_id: str):
