@@ -20,17 +20,36 @@ class Artist(Url):
         "popularity",
     )
 
+    if TYPE_CHECKING:
+        id: str
+        uri: str
+        external_urls: dict
+        name: str
+        genres: List[str]
+        followers: int
+        images: List[Asset]
+        popularity: int
+
     def __init__(self, state, data: dict) -> None:
         self._state: State = state
+        self.id = data["id"]
+        self.uri = data["uri"]
+        self.external_urls = data["external_urls"]
+        self.name = data["name"]
 
-        self.id: str = data["id"]
-        self.uri: str = data["uri"]
-        self.external_urls: dict = data["external_urls"]
-        self.name: str = data["name"]
-        self.followers: int = data["followers"]["total"]
-        self.genres: List[str] = data["genres"]
-        self.images: List[Asset] = [Asset(**a) for a in data["images"]]
-        self.popularity: int = data["popularity"]
+        if "followers" in data:
+            self.followers = data["followers"]["total"]
+        else:
+            self.followers = None
+
+        self.genres = data.get("genres")
+
+        if "images" in data:
+            self.images = [Asset(**a) for a in data["images"]]
+        else:
+            self.images = None
+
+        self.popularity = data.get("popularity")
 
     def __repr__(self) -> str:
         attrs = " ".join(f"{name}={getattr(self, name)}" for name in ["id", "name"])
