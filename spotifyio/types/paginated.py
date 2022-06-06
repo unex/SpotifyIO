@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, List, TypedDict, TypeVar
+from typing import TYPE_CHECKING, Any, List, Optional, TypedDict, TypeVar
 
 T = TypeVar("T")
 

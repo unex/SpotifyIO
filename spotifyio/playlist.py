@@ -1,18 +1,16 @@
 from typing import TYPE_CHECKING, Iterable, List
 
-from .utils.chunked import Chunked
-from .utils.paginator import Paginator
-from .utils.list_iterator import ListIterator
-
 from .asset import Asset
-from .mixins import Url, Followable
-
+from .mixins import Followable, Url
 from .types import SpotifyID, SpotifyURI
+from .utils.chunked import Chunked
+from .utils.list_iterator import ListIterator
+from .utils.paginator import Paginator
 
 if TYPE_CHECKING:
-    from .types import PlaylistPayload
     from .state import State
-    from .track import Track, ListTrack
+    from .track import ListTrack, Track
+    from .types import PlaylistPayload
     from .user import User
 
 __all__ = ("Playlist",)

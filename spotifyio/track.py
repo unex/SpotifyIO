@@ -1,16 +1,15 @@
 from typing import TYPE_CHECKING, List
 
+from .mixins import Url
+from .types import SpotifyID, SpotifyURI
 from .utils.time import fromspotifyiso
 
-from .mixins import Url
-
-from .types import SpotifyID, SpotifyURI
-
 if TYPE_CHECKING:
-    from .types import TrackPayload, ListTrackPayload
-    from .state import State
     from .album import Album
     from .artist import Artist
+    from .state import State
+    from .types import ListTrackPayload, TrackPayload
+    from .user import User
 
 
 __all__ = ("Track", "ListTrack")

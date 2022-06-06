@@ -3,18 +3,16 @@ from typing import TYPE_CHECKING, List, Literal
 
 from .asset import Asset
 from .mixins import Url
-
-from .utils.time import fromspotifyiso
+from .types import SpotifyID, SpotifyURI
 from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
-
-from .types import SpotifyID, SpotifyURI
+from .utils.time import fromspotifyiso
 
 if TYPE_CHECKING:
-    from .types import AlbumPayload, ListAlbumPayload
-    from .state import State
     from .artist import Artist
+    from .state import State
     from .track import Track
+    from .types import AlbumPayload, ListAlbumPayload
 
 
 __all__ = ("Album",)

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
-from typing import Iterable
 from secrets import token_urlsafe
-from urllib.parse import urlencode, urlparse, parse_qsl
+from typing import Iterable
+from urllib.parse import parse_qsl, urlencode, urlparse
 
-from aiohttp import ClientSession, BasicAuth
+from aiohttp import BasicAuth, ClientSession
 
 from .scopes import Scopes
 

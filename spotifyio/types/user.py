@@ -1,7 +1,7 @@
 from typing import List
 
-from .payload import Payload
 from .asset import AssetPayload
+from .payload import Payload
 from .spotify import SpotifyUserID
 
 

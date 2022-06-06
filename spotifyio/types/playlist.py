@@ -1,8 +1,7 @@
 from typing import List, NewType
 
-from .payload import Payload
 from .asset import AssetPayload
-
+from .payload import Payload
 
 SnapshotID = NewType("SnapshotID", str)
 

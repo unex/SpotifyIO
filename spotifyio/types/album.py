@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, List
 
-from .payload import Payload
-from .list_item import ListItemPayload
 from .asset import AssetPayload
+from .list_item import ListItemPayload
+from .payload import Payload
 
 if TYPE_CHECKING:
     from .artist import ArtistPayload

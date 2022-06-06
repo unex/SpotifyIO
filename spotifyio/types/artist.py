@@ -1,7 +1,7 @@
 from typing import List, TypedDict
 
-from .payload import Payload
 from .asset import AssetPayload
+from .payload import Payload
 
 
 class ArtistPayload(Payload, total=False):

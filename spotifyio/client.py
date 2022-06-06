@@ -1,22 +1,19 @@
 import asyncio
-
-from typing import List, Optional, Type, Any
 from types import TracebackType
+from typing import Any, List, Optional, Type
 
-from .utils.chunked import Chunked
-from .utils.paginator import Paginator
-from .utils.list_iterator import ListIterator
-
-from .auth import FLOWS, Token
-from .http import HTTPClient
-from .state import State
-
-from .types import SpotifyID
 from .album import Album
 from .artist import Artist
+from .auth import FLOWS, Token
+from .http import HTTPClient
 from .playlist import Playlist
+from .state import State
 from .track import Track
-from .user import ClientUser
+from .types import SpotifyID, SpotifyUserID
+from .user import ClientUser, User
+from .utils.chunked import Chunked
+from .utils.list_iterator import ListIterator
+from .utils.paginator import Paginator
 
 
 class Client:

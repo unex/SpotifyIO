@@ -1,13 +1,14 @@
-import sys
 import asyncio
-
-from typing import List, Optional, Any, Dict, ClassVar
+import sys
+from base64 import b64encode
+from typing import Any, ClassVar, Dict, List, Optional
 
 import aiohttp
 import orjson
 
 from . import __version__
 from .auth import FLOWS
+from .exceptions import Forbidden, HTTPException, NotFound, ServerError
 from .types import (
     AlbumPayload,
     ArtistPayload,
@@ -17,15 +18,14 @@ from .types import (
     PaginatedPayload,
     PlaylistPayload,
     SnapshotID,
-    SpotifyURI,
-    SpotifyID,
     SpotifyCategoryID,
-    SpotifyUserID,
+    SpotifyID,
+    SpotifyURI,
     SpotifyURL,
+    SpotifyUserID,
     TrackPayload,
     UserPayload,
 )
-from .exceptions import HTTPException, Forbidden, NotFound, ServerError
 
 
 class Route:

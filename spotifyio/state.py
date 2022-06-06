@@ -1,9 +1,8 @@
-from .http import HTTPClient
-
 from .album import Album, ListAlbum
 from .artist import Artist
+from .http import HTTPClient
 from .playlist import Playlist
-from .track import Track, ListTrack
+from .track import ListTrack, Track
 from .user import User
 
 OBJ_MAPPING = {
