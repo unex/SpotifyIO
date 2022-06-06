@@ -8,7 +8,10 @@ from .utils.time import fromspotifyiso
 from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 
+from .types import SpotifyID, SpotifyURI
+
 if TYPE_CHECKING:
+    from .types import AlbumPayload, ListAlbumPayload
     from .state import State
     from .artist import Artist
     from .track import Track
@@ -39,8 +42,8 @@ class Album(Url):
     )
 
     if TYPE_CHECKING:
-        id: str
-        uri: str
+        id: SpotifyID
+        uri: SpotifyURI
         external_urls: dict
         name: str
         type: Literal["album", "single", "compilation"]
@@ -55,11 +58,11 @@ class Album(Url):
         label: str
         popularity: int
 
-    def __init__(self, state, data: dict) -> None:
+    def __init__(self, state, data: "AlbumPayload") -> None:
         self._state: State = state
         self._update(data)
 
-    def _update(self, data: dict):
+    def _update(self, data: "AlbumPayload"):
         self.id = data["id"]
         self.uri = data["uri"]
         self.external_urls = data["external_urls"]
@@ -109,7 +112,7 @@ class Album(Url):
 class ListAlbum(Album):
     __slots__ = ("added_at",)
 
-    def __init__(self, state, data: dict) -> None:
+    def __init__(self, state, data: "ListAlbumPayload") -> None:
         super().__init__(state, data["album"])
 
         self.added_at = fromspotifyiso(data["added_at"])

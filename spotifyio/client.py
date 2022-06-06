@@ -11,6 +11,7 @@ from .auth import FLOWS, Token
 from .http import HTTPClient
 from .state import State
 
+from .types import SpotifyID
 from .album import Album
 from .artist import Artist
 from .playlist import Playlist
@@ -54,10 +55,10 @@ class Client:
     async def me(self) -> ClientUser:
         return ClientUser(self._state, await self._http.fetch_me())
 
-    async def fetch_album(self, album_id: str) -> Album:
+    async def fetch_album(self, album_id: SpotifyID) -> Album:
         return self._state.objectify(await self._http.get_album(album_id))
 
-    def fetch_albums(self, *album_ids: List[str]) -> ListIterator[Album]:
+    def fetch_albums(self, *album_ids: List[SpotifyID]) -> ListIterator[Album]:
         async def gen():
             for chunk in Chunked(album_ids, 50):
                 for album in await self._http.get_albums(chunk):
@@ -65,10 +66,10 @@ class Client:
 
         return ListIterator(gen())
 
-    async def fetch_artist(self, artist_id: str) -> Artist:
+    async def fetch_artist(self, artist_id: SpotifyID) -> Artist:
         return self._state.objectify(await self._http.get_artist(artist_id))
 
-    def fetch_artists(self, *artist_ids: List[str]) -> ListIterator[Artist]:
+    def fetch_artists(self, *artist_ids: List[SpotifyID]) -> ListIterator[Artist]:
         async def gen():
             for chunk in Chunked(artist_ids, 50):
                 for artist in await self._http.get_artists(chunk):
@@ -76,10 +77,10 @@ class Client:
 
         return ListIterator(gen())
 
-    async def fetch_track(self, track_id: str) -> Track:
+    async def fetch_track(self, track_id: SpotifyID) -> Track:
         return self._state.objectify(await self._http.get_track(track_id))
 
-    def fetch_tracks(self, *track_ids: List[str]) -> ListIterator[Track]:
+    def fetch_tracks(self, *track_ids: List[SpotifyID]) -> ListIterator[Track]:
         async def gen():
             for chunk in Chunked(track_ids, 50):
                 for track in await self._http.get_tracks(chunk):
@@ -87,7 +88,7 @@ class Client:
 
         return ListIterator(gen())
 
-    async def fetch_playlist(self, playlist_id: str) -> Playlist:
+    async def fetch_playlist(self, playlist_id: SpotifyID) -> Playlist:
         return self._state.objectify(await self._http.get_playlist(playlist_id))
 
     def new_album_releases(self, country: str = None) -> ListIterator[Album]:

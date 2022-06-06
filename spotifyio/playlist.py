@@ -7,7 +7,10 @@ from .utils.list_iterator import ListIterator
 from .asset import Asset
 from .mixins import Url, Followable
 
+from .types import SpotifyID, SpotifyURI
+
 if TYPE_CHECKING:
+    from .types import PlaylistPayload
     from .state import State
     from .track import Track, ListTrack
     from .user import User
@@ -33,8 +36,8 @@ class Playlist(Url, Followable):
     )
 
     if TYPE_CHECKING:
-        id: str
-        uri: str
+        id: SpotifyID
+        uri: SpotifyURI
         external_urls: dict
         name: str
         description: str
@@ -45,11 +48,11 @@ class Playlist(Url, Followable):
         collaborative: bool
         snapshot_id: str
 
-    def __init__(self, state, data: dict) -> None:
+    def __init__(self, state, data: "PlaylistPayload") -> None:
         self._state: State = state
         self._update(data)
 
-    def _update(self, data: dict):
+    def _update(self, data: "PlaylistPayload"):
         self.id = data["id"]
         self.uri = data["uri"]
         self.external_urls = data["external_urls"]

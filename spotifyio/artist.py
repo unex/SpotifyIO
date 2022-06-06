@@ -6,7 +6,10 @@ from .utils.paginator import Paginator
 from .asset import Asset
 from .mixins import Url, Followable
 
+from .types import SpotifyID, SpotifyURI
+
 if TYPE_CHECKING:
+    from .types import ArtistPayload
     from .state import State
     from .album import Album
     from .track import Track
@@ -28,19 +31,19 @@ class Artist(Url, Followable):
     )
 
     if TYPE_CHECKING:
-        id: str
-        uri: str
+        id: SpotifyID
+        uri: SpotifyURI
         external_urls: dict
         name: str
         genres: List[str]
         images: List[Asset]
         popularity: int
 
-    def __init__(self, state, data: dict) -> None:
+    def __init__(self, state, data: "ArtistPayload") -> None:
         self._state: State = state
         self._update(data)
 
-    def _update(self, data: dict):
+    def _update(self, data: "ArtistPayload"):
         self.id = data["id"]
         self.uri = data["uri"]
         self.external_urls = data["external_urls"]

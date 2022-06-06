@@ -8,6 +8,23 @@ import orjson
 
 from . import __version__
 from .auth import FLOWS
+from .types import (
+    AlbumPayload,
+    ArtistPayload,
+    ClientUserPayload,
+    ListAlbumPayload,
+    ListTrackPayload,
+    PaginatedPayload,
+    PlaylistPayload,
+    SnapshotID,
+    SpotifyURI,
+    SpotifyID,
+    SpotifyCategoryID,
+    SpotifyUserID,
+    SpotifyURL,
+    TrackPayload,
+    UserPayload,
+)
 from .exceptions import HTTPException, Forbidden, NotFound, ServerError
 
 
@@ -102,49 +119,53 @@ class HTTPClient:
     async def close(self):
         await self.__session.close()
 
-    async def fetch_me(self):
+    async def fetch_me(self) -> ClientUserPayload:
         route = Route("GET", "/me")
         return await self.request(route)
 
     # Albums
 
-    async def get_album(self, album_id: str):
+    async def get_album(self, album_id: SpotifyID) -> AlbumPayload:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-album"""
         route = Route("GET", f"/albums/{album_id}")
         return await self.request(route)
 
-    async def get_albums(self, album_ids: List[str]):
+    async def get_albums(self, album_ids: List[SpotifyID]) -> List[AlbumPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-albums"""
         route = Route("GET", "/albums", ids=",".join(album_ids))
         data = await self.request(route)
         return data["albums"]
 
-    async def get_album_tracks(self, album_id: str, **kwargs):
+    async def get_album_tracks(
+        self, album_id: SpotifyID, **kwargs
+    ) -> PaginatedPayload[TrackPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-albums-tracks"""
         route = Route("GET", f"/albums/{album_id}/tracks", **kwargs)
         return await self.request(route)
 
-    async def get_me_albums(self, **kwargs):
+    async def get_me_albums(self, **kwargs) -> PaginatedPayload[ListAlbumPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-albums"""
         route = Route("GET", "/me/albums", **kwargs)
         return await self.request(route)
 
-    async def put_me_albums(self, album_ids=List[str]):
+    async def put_me_albums(self, album_ids=List[SpotifyID]) -> None:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/save-albums-user"""
         route = Route("PUT", "/me/albums", ids=",".join(album_ids))
         await self.request(route)
 
-    async def delete_me_albums(self, album_ids=List[str]):
+    async def delete_me_albums(self, album_ids=List[SpotifyID]) -> None:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-albums-user"""
         route = Route("DELETE", "/me/albums", ids=",".join(album_ids))
         await self.request(route)
 
-    async def get_me_albums_contains(self, album_ids: List[str]):
+    async def get_me_albums_contains(self, album_ids: List[SpotifyID]) -> List[bool]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-albums"""
         route = Route("GET", "/me/albums/contains", ids=",".join(album_ids))
         return await self.request(route)
 
-    async def get_browse_new_releases(self, country_code: str, **kwargs):
+    async def get_browse_new_releases(
+        self, country_code: str, **kwargs
+    ) -> PaginatedPayload[AlbumPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-new-releases"""
         if country_code:
             kwargs["country"] = country_code
@@ -155,33 +176,35 @@ class HTTPClient:
 
     # Artists
 
-    async def get_artist(self, artist_id: str):
+    async def get_artist(self, artist_id: SpotifyID) -> ArtistPayload:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist"""
         route = Route("GET", f"/artists/{artist_id}")
         return await self.request(route)
 
-    async def get_artists(self, artist_ids: List[str]):
+    async def get_artists(self, artist_ids: List[SpotifyID]) -> List[ArtistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-artists"""
         route = Route("GET", "/artists", ids=",".join(artist_ids))
         data = await self.request(route)
         return data["artists"]
 
     async def get_artist_albums(
-        self, artist_id: str, include: List[str] = [], **kwargs
-    ):
+        self, artist_id: SpotifyID, include: List[str] = [], **kwargs
+    ) -> PaginatedPayload[AlbumPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums"""
         route = Route(
             "GET", f"/artists/{artist_id}/albums", include_groups=include, **kwargs
         )
         return await self.request(route)
 
-    async def get_artist_top_tracks(self, artist_id: str, *, country_code: str):
+    async def get_artist_top_tracks(
+        self, artist_id: SpotifyID, *, country_code: str
+    ) -> List[TrackPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-top-tracks"""
         route = Route("GET", f"/artists/{artist_id}/top-tracks", country=country_code)
         data = await self.request(route)
         return data["tracks"]
 
-    async def get_artist_related(self, artist_id: str):
+    async def get_artist_related(self, artist_id: SpotifyID) -> List[ArtistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-related-artists"""
         route = Route("GET", f"/artists/{artist_id}/related-artists")
         data = await self.request(route)
@@ -189,12 +212,12 @@ class HTTPClient:
 
     # Tracks
 
-    async def get_track(self, track_id: str):
+    async def get_track(self, track_id: SpotifyID) -> TrackPayload:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track"""
         route = Route("GET", f"/tracks/{track_id}")
         return await self.request(route)
 
-    async def get_tracks(self, track_ids: List[str]):
+    async def get_tracks(self, track_ids: List[SpotifyID]) -> List[TrackPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks"""
         route = Route("GET", "/tracks", ids=",".join(track_ids))
         data = await self.request(route)
@@ -202,20 +225,20 @@ class HTTPClient:
 
     # Playlists
 
-    async def get_playlist(self, playlist_id: str):
+    async def get_playlist(self, playlist_id: SpotifyID) -> PlaylistPayload:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist"""
         route = Route("GET", f"/playlists/{playlist_id}")
         return await self.request(route)
 
     async def put_playlist(
         self,
-        playlist_id: str,
+        playlist_id: SpotifyID,
         *,
         name: str,
         description: str,
         public: bool,
         collaborative: bool,
-    ):
+    ) -> None:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/change-playlist-details"""
         data = {}
 
@@ -229,16 +252,18 @@ class HTTPClient:
             data["collaborative"] = collaborative
 
         route = Route("PUT", f"/playlists/{playlist_id}")
-        return await self.request(route, json=data)
+        await self.request(route, json=data)
 
-    async def get_playlist_tracks(self, playlist_id: str, **kwargs):
+    async def get_playlist_tracks(
+        self, playlist_id: SpotifyID, **kwargs
+    ) -> PaginatedPayload[TrackPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks"""
         route = Route("GET", f"/playlists/{playlist_id}/tracks", **kwargs)
         return await self.request(route)
 
     async def post_playlist_tracks(
-        self, playlist_id: str, *, uris: List[str], position: int
-    ):
+        self, playlist_id: SpotifyID, *, uris: List[SpotifyURI], position: int
+    ) -> SnapshotID:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/add-tracks-to-playlist"""
         query = {
             "uris": ",".join(uris),
@@ -253,49 +278,52 @@ class HTTPClient:
 
     async def put_playlist_tracks(
         self,
-        playlist_id: str,
+        playlist_id: SpotifyID,
         *,
-        uris: List[str],
+        uris: List[SpotifyURI],
         range_start: int,
         insert_before: int,
         range_length: int,
-        snapshot_id: str,
+        snapshot_id: SnapshotID,
     ):
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/reorder-or-replace-playlists-tracks"""
         raise NotImplementedError()
 
     async def delete_playlist_tracks(
-        self, playlist_id: str, *, uris: List[str], snapshot_id: str
-    ):
+        self, playlist_id: SpotifyID, *, uris: List[SpotifyURI], snapshot_id: SnapshotID
+    ) -> SnapshotID:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist"""
         route = Route("DELETE", f"/playlists/{playlist_id}/tracks")
-        return await self.request(
+        data = await self.request(
             route,
             json={
                 "tracks": list(map(lambda x: {"uri": x}, uris)),
                 "snapshot_id": snapshot_id,
             },
         )
+        return data["snapshot_id"]
 
-    async def get_me_playlists(self, **kwargs):
+    async def get_me_playlists(self, **kwargs) -> PaginatedPayload[PlaylistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists"""
         route = Route("GET", "/me/playlists", **kwargs)
         return await self.request(route)
 
-    async def get_user_playlists(self, user_id: str, **kwargs):
+    async def get_user_playlists(
+        self, user_id: SpotifyUserID, **kwargs
+    ) -> PaginatedPayload[PlaylistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-list-users-playlists"""
         route = Route("GET", f"/users/{user_id}/playlists", **kwargs)
         return await self.request(route)
 
     async def post_user_playlists(
         self,
-        user_id: str,
+        user_id: SpotifyUserID,
         *,
         name: str,
         description: str,
         public: bool,
         collaborative: bool,
-    ):
+    ) -> PlaylistPayload:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/create-playlist"""
         data = {
             "name": name,
@@ -309,7 +337,9 @@ class HTTPClient:
         route = Route("POST", f"/users/{user_id}/playlists")
         return await self.request(route, json=data)
 
-    async def get_browse_featured_playlists(self, *, country_code: str, **kwargs):
+    async def get_browse_featured_playlists(
+        self, *, country_code: str, **kwargs
+    ) -> PaginatedPayload[PlaylistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists"""
         if country_code:
             kwargs["country"] = country_code
@@ -320,7 +350,7 @@ class HTTPClient:
 
     async def get_browse_category_playlists(
         self, category: str, *, country_code: str, **kwargs
-    ):
+    ) -> PaginatedPayload[PlaylistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-categories-playlists"""
         if country_code:
             kwargs["country"] = country_code
@@ -329,7 +359,7 @@ class HTTPClient:
         data = await self.request(route)
         return data["playlists"]
 
-    async def put_playlist_image(self, playlist_id, *, image: bytes):
+    async def put_playlist_image(self, playlist_id: SpotifyID, *, image: bytes) -> None:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/upload-custom-playlist-cover"""
         route = Route("PUT", f"/playlists/{playlist_id}/images")
         await self.request(route, data=b64encode(image))

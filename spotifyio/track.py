@@ -4,7 +4,10 @@ from .utils.time import fromspotifyiso
 
 from .mixins import Url
 
+from .types import SpotifyID, SpotifyURI
+
 if TYPE_CHECKING:
+    from .types import TrackPayload, ListTrackPayload
     from .state import State
     from .album import Album
     from .artist import Artist
@@ -34,8 +37,8 @@ class Track(Url):
     )
 
     if TYPE_CHECKING:
-        id: str
-        uri: str
+        id: SpotifyID
+        uri: SpotifyURI
         external_urls: dict
         name: str
         album: Album
@@ -46,11 +49,11 @@ class Track(Url):
         preview_url: str
         track_number: int
 
-    def __init__(self, state, data: dict) -> None:
+    def __init__(self, state, data: "TrackPayload") -> None:
         self._state: State = state
         self._update(data)
 
-    def _update(self, data: dict):
+    def _update(self, data: "TrackPayload"):
         self.id = data["id"]
         self.uri = data["uri"]
         self.external_urls = data["external_urls"]
@@ -79,7 +82,7 @@ class Track(Url):
 class ListTrack(Track):
     __slots__ = ("added_at",)
 
-    def __init__(self, state, data: dict) -> None:
+    def __init__(self, state, data: "ListTrackPayload") -> None:
         super().__init__(state, data["track"])
 
         self.added_at = fromspotifyiso(data["added_at"])

@@ -7,7 +7,10 @@ from .utils.list_iterator import ListIterator
 from .asset import Asset
 from .mixins import Url, Followable
 
+from .types import SpotifyUserID, SpotifyURI
+
 if TYPE_CHECKING:
+    from .types import UserPayload, ClientUserPayload
     from .state import State
     from .album import Album
     from .artist import Artist
@@ -48,17 +51,17 @@ class User(Url, Followable):
     )
 
     if TYPE_CHECKING:
-        id: str
-        uri: str
+        id: SpotifyUserID
+        uri: SpotifyURI
         external_urls: dict
         display_name: str
         images: List[Asset]
 
-    def __init__(self, state, data: dict) -> None:
+    def __init__(self, state, data: "UserPayload") -> None:
         self._state: State = state
         self._update(data)
 
-    def _update(self, data: dict) -> None:
+    def _update(self, data: "UserPayload") -> None:
         self.id = data["id"]
         self.uri = data["uri"]
 
@@ -100,7 +103,7 @@ class ClientUser(User):
         product: Optional[str]
         explicit_content: Optional[dict]
 
-    def _update(self, data: dict) -> None:
+    def _update(self, data: "ClientUserPayload") -> None:
         super()._update(data)
 
         self.email = data.get("email")  # user-read-email
