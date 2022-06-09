@@ -9,3 +9,8 @@ orjson = "*"
 
 [requires]
 python_version = "3.10"
+
+[dev-packages]
+furo = "*"
+sphinx-autobuild = "*"
+sphinxcontrib-asyncio = "*"
