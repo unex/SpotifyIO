@@ -1,4 +1,4 @@
-from typing import Any, Coroutine
+from typing import Callable, Awaitable
 
 from ..types import PaginatedPayload
 
@@ -7,9 +7,8 @@ class Paginator:
     API_LIMIT = 50  # fingers crossed this is constant....
 
     def __init__(
-        self, func: Coroutine[Any, Any, PaginatedPayload], *args, **kwargs
+        self, func: Callable[..., Awaitable[PaginatedPayload]], *args, **kwargs
     ) -> None:
-        print(type(func))
         self._func = func
 
         self._limit: int = kwargs.pop("limit", None)
