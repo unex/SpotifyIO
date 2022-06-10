@@ -19,6 +19,24 @@ __all__ = ("Album",)
 
 
 class Album(Url):
+    """A Spotify Album.
+
+    Attributes:
+        id (:class:`str`): The album’s unique ID.
+        uri (:class:`str`): The album’s Spotify URI.
+        external_urls (:class:`dict`): External links to this album.
+        name (:class:`str`): The album's name.
+        type (`Literal["album", "single", "compilation"]`): The type of album.
+        artists (List[:class:`.Artist`]): The artists on this album.
+        available_markets (List[:class:`str`]): List of countries this album is avaliable in.
+        images (List[:class:`Asset`]): Artwork for this album.
+        release_date (:class:`datetime`): The date this album was released.
+        total_tracks (:class:`int`): Total number of tracks on this album.
+        copyrights (:class:`dict`): Copyright information.
+        genres (List[:class:`str`]): List of genres for this album.
+        label: (:class:`str`): The label this album was published by.
+        popularity (:class:`int`): Album popularity calculated by Spotify.
+    """
     __slots__ = (
         "_state",
         "_tracks",
@@ -89,8 +107,12 @@ class Album(Url):
         self.label = data.get("label")
         self.popularity = data.get("popularity")
 
-    @property
     def tracks(self) -> ListIterator["Track"]:
+        """An asynchronous iterator for the album Tracks.
+
+        Yields:
+            :class:`.Track`:.
+        """
         async def gen():
             async for data in Paginator(
                 self._state.http.get_album_tracks, self.id, _data=self._tracks
@@ -99,7 +121,8 @@ class Album(Url):
 
         return ListIterator(gen())
 
-    async def fetch(self):
+    async def fetch(self) -> None:
+        """Updates a partial of this object with all data"""
         self._update(await self._state.http.get_album(self.id))
 
     def __repr__(self) -> str:

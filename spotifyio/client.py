@@ -17,6 +17,12 @@ from .utils.paginator import Paginator
 
 
 class Client:
+    """SpotifyIO Client object that is used to interact with the Spotify API.
+
+    Attributes:
+        token (Optional[:class:`.Token`]): The current auth token. Could be ``None``.
+    """
+
     def __init__(self, auth_flow: FLOWS, **options: Any) -> None:
         self._loop: asyncio.AbstractEventLoop = asyncio.get_running_loop()
 
@@ -50,12 +56,35 @@ class Client:
         return self._http.auth.token
 
     async def me(self) -> ClientUser:
-        return ClientUser(self._state, await self._http.fetch_me())
+        """:class:`.ClientUser`: Retrieves the currently authenticated user"""
+        return ClientUser(self._state, await self._http.get_me())
 
     async def fetch_album(self, album_id: SpotifyID) -> Album:
+        """Retrieve an album with the given ID.
+
+        Args:
+            album_id (:class:`str`): The album's ID to fetch
+
+        Raises:
+            HTTPException: Retrieving the album failed.
+
+        Returns:
+            :class:`.Album`: The album from the ID.
+        """
         return self._state.objectify(await self._http.get_album(album_id))
 
     def fetch_albums(self, *album_ids: List[SpotifyID]) -> ListIterator[Album]:
+        """An asynchronous iterator for multiple Albums.
+
+        Args:
+            \*album_ids (:class:`str`): Argument list of album ids
+
+        Raises:
+            HTTPException: Retrieving the album failed.
+
+        Yields:
+            :class:`.Album`: An Album.
+        """
         async def gen():
             for chunk in Chunked(album_ids, 50):
                 for album in await self._http.get_albums(chunk):
@@ -64,9 +93,31 @@ class Client:
         return ListIterator(gen())
 
     async def fetch_artist(self, artist_id: SpotifyID) -> Artist:
+        """Retrieve an artist with the given ID.
+
+        Args:
+            artist_id (:class:`str`): The artist's ID to fetch
+
+        Raises:
+            HTTPException: Retrieving the album failed.
+
+        Returns:
+            :class:`.Artist`: The artist from the ID.
+        """
         return self._state.objectify(await self._http.get_artist(artist_id))
 
     def fetch_artists(self, *artist_ids: List[SpotifyID]) -> ListIterator[Artist]:
+        """An asynchronous iterator for multiple Artists.
+
+        Args:
+            \*artist_ids (:class:`str`): Argument list of artist ids
+
+        Raises:
+            HTTPException: Retrieving the artist failed.
+
+        Yields:
+            :class:`.Artist`: An Artist.
+        """
         async def gen():
             for chunk in Chunked(artist_ids, 50):
                 for artist in await self._http.get_artists(chunk):
@@ -75,9 +126,33 @@ class Client:
         return ListIterator(gen())
 
     async def fetch_track(self, track_id: SpotifyID) -> Track:
+        """Retrieve a track with the given ID.
+
+        Args:
+            track_id (:class:`str`): The track's ID to fetch
+
+        Raises:
+            HTTPException: Retrieving the track failed.
+
+        Returns:
+            :class:`.Track`: The track from the ID.
+        """
         return self._state.objectify(await self._http.get_track(track_id))
 
     def fetch_tracks(self, *track_ids: List[SpotifyID]) -> ListIterator[Track]:
+        """An asynchronous iterator for multiple Tracks.
+
+        .. :async-for:
+
+        Args:
+            \*track_ids (:class:`str`): Argument list of track ids
+
+        Raises:
+            HTTPException: Retrieving the track failed.
+
+        Yields:
+            :class:`.Track`: A Track.
+        """
         async def gen():
             for chunk in Chunked(track_ids, 50):
                 for track in await self._http.get_tracks(chunk):
@@ -85,10 +160,40 @@ class Client:
 
         return ListIterator(gen())
 
+    async def fetch_user(self, user_id: SpotifyUserID) -> User:
+        """Retrieve a user with the given ID.
+
+        Args:
+            user_id (:class:`str`): The user's ID to fetch
+
+        Raises:
+            HTTPException: Retrieving the user failed.
+
+        Returns:
+            :class:`.User`: The user from the ID.
+        """
+        return self._state.objectify(await self._http.get_user(user_id))
+
     async def fetch_playlist(self, playlist_id: SpotifyID) -> Playlist:
+        """Retrieve a playlist with the given ID.
+
+        Args:
+            playlist_id (:class:`str`): The playlist's ID to fetch
+
+        Raises:
+            HTTPException: Retrieving the playlist failed.
+
+        Returns:
+            :class:`.Playlist`: The playlist from the ID.
+        """
         return self._state.objectify(await self._http.get_playlist(playlist_id))
 
     def new_album_releases(self, country: str = None) -> ListIterator[Album]:
+        """An asynchronous iterator for new Album releases.
+
+        Yields:
+            :class:`.Album`: An Album.
+        """
         async def gen():
             async for data in Paginator(
                 self._http.get_browse_new_releases, country_code=country
@@ -98,6 +203,11 @@ class Client:
         return ListIterator(gen())
 
     def featured_playlists(self, country: str = None) -> ListIterator[Playlist]:
+        """An asynchronous iterator for featured Playlists.
+
+        Yields:
+            :class:`.Playlist`: A Playlist.
+        """
         async def gen():
             async for data in Paginator(
                 self._http.get_browse_featured_playlists, country_code=country

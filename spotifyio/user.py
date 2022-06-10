@@ -38,6 +38,17 @@ class ClientUserAlbums(ListIterator["Album"]):
 
 
 class User(Url, Followable):
+    """A Spotify User.
+
+    Attributes:
+        id (:class:`str`): The user’s unique ID.
+        uri (:class:`str`): The user’s Spotify URI.
+        external_urls (:class:`dict`): External links to this user.
+        display_name (:class:`str`): The user's name.
+        followers (:class:`int`): The user's followers.
+        images (List[:class:`.Asset`]): Profile image for this user.
+    """
+
     __slots__ = (
         "_state",
         "_followers",
@@ -72,8 +83,12 @@ class User(Url, Followable):
         else:
             self.images = None
 
-    @property
     def playlists(self) -> ListIterator["Playlist"]:
+        """An asynchronous iterator for the users's saved playlists.
+
+        Yields:
+            :class:`.Playlist`:
+        """
         async def gen():
             async for data in Paginator(self._state.http.get_user_playlists, self.id):
                 yield self._state.objectify(data)
@@ -88,6 +103,15 @@ class User(Url, Followable):
 
 
 class ClientUser(User):
+    """The currently authenticated Spotify User.
+
+    Attributes:
+        email (:class:`str`): The user’s email, requires `user-read-email` scope.
+        country (:class:`str`): The user’s country, requires `user-read-private` scope.
+        product (:class:`str`): If this account is premium, requires `user-read-private` scope.
+        explicit_content (:class:`dict`): The user's explicit content settings, requires `user-read-private` scope.
+    """
+
     __slots__ = (
         "email",
         "country",
@@ -109,15 +133,18 @@ class ClientUser(User):
         self.product = data.get("product")  # user-read-private
         self.explicit_content = data.get("explicit_content")  # user-read-private
 
-    @property
     def albums(self, market: str = None) -> ClientUserAlbums["Album"]:
+        """An asynchronous iterator for the users's saved albums.
+
+        Yields:
+            :class:`.Album`:
+        """
         async def gen():
             async for data in Paginator(self._state.http.get_me_albums):
                 yield self._state.objectify(data)
 
         return ClientUserAlbums(self._state, gen())
 
-    @property
     def playlists(self) -> ListIterator["Playlist"]:
         async def gen():
             async for data in Paginator(self._state.http.get_me_playlists):
@@ -132,6 +159,17 @@ class ClientUser(User):
         public: bool = True,
         collaborative: bool = False,
     ) -> "Playlist":
+        """Creates a new playlist.
+
+        Parameters:
+            name (:class:`str`)
+            description (:class:`str`)
+            public (:class:`bool`)
+            collaborative (:class:`bool`)
+
+        Returns:
+            :class:`.Playlist`
+        """
         return self._state.objectify(
             await self._state.http.post_user_playlists(
                 self.id,
