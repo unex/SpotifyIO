@@ -85,6 +85,7 @@ class Client:
         Yields:
             :class:`.Album`: An Album.
         """
+
         async def gen():
             for chunk in Chunked(album_ids, 50):
                 for album in await self._http.get_albums(chunk):
@@ -118,6 +119,7 @@ class Client:
         Yields:
             :class:`.Artist`: An Artist.
         """
+
         async def gen():
             for chunk in Chunked(artist_ids, 50):
                 for artist in await self._http.get_artists(chunk):
@@ -153,6 +155,7 @@ class Client:
         Yields:
             :class:`.Track`: A Track.
         """
+
         async def gen():
             for chunk in Chunked(track_ids, 50):
                 for track in await self._http.get_tracks(chunk):
@@ -194,10 +197,9 @@ class Client:
         Yields:
             :class:`.Album`: An Album.
         """
+
         async def gen():
-            async for data in Paginator(
-                self._http.get_browse_new_releases, country_code=country
-            ):
+            async for data in Paginator(self._http.get_browse_new_releases, country_code=country):
                 yield self._state.objectify(data)
 
         return GenericAsyncIterator(gen())
@@ -208,10 +210,9 @@ class Client:
         Yields:
             :class:`.Playlist`: A Playlist.
         """
+
         async def gen():
-            async for data in Paginator(
-                self._http.get_browse_featured_playlists, country_code=country
-            ):
+            async for data in Paginator(self._http.get_browse_featured_playlists, country_code=country):
                 yield self._state.objectify(data)
 
         return GenericAsyncIterator(gen())

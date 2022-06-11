@@ -73,9 +73,7 @@ class HTTPClient:
 
         for tries in range(5):
             try:
-                async with self.__session.request(
-                    method, url, params=route.query, **kwargs
-                ) as response:
+                async with self.__session.request(method, url, params=route.query, **kwargs) as response:
                     if text := await response.text():
                         data = orjson.loads(text)
                     else:
@@ -136,9 +134,7 @@ class HTTPClient:
         data = await self.request(route)
         return data["albums"]
 
-    async def get_album_tracks(
-        self, album_id: SpotifyID, **kwargs
-    ) -> PaginatedPayload[TrackPayload]:
+    async def get_album_tracks(self, album_id: SpotifyID, **kwargs) -> PaginatedPayload[TrackPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-albums-tracks"""
         route = Route("GET", f"/albums/{album_id}/tracks", **kwargs)
         return await self.request(route)
@@ -163,9 +159,7 @@ class HTTPClient:
         route = Route("GET", "/me/albums/contains", ids=",".join(album_ids))
         return await self.request(route)
 
-    async def get_browse_new_releases(
-        self, country_code: str, **kwargs
-    ) -> PaginatedPayload[AlbumPayload]:
+    async def get_browse_new_releases(self, country_code: str, **kwargs) -> PaginatedPayload[AlbumPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-new-releases"""
         if country_code:
             kwargs["country"] = country_code
@@ -191,14 +185,10 @@ class HTTPClient:
         self, artist_id: SpotifyID, include: List[str] = [], **kwargs
     ) -> PaginatedPayload[AlbumPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums"""
-        route = Route(
-            "GET", f"/artists/{artist_id}/albums", include_groups=include, **kwargs
-        )
+        route = Route("GET", f"/artists/{artist_id}/albums", include_groups=include, **kwargs)
         return await self.request(route)
 
-    async def get_artist_top_tracks(
-        self, artist_id: SpotifyID, *, country_code: str
-    ) -> List[TrackPayload]:
+    async def get_artist_top_tracks(self, artist_id: SpotifyID, *, country_code: str) -> List[TrackPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-top-tracks"""
         route = Route("GET", f"/artists/{artist_id}/top-tracks", country=country_code)
         data = await self.request(route)
@@ -254,16 +244,12 @@ class HTTPClient:
         route = Route("PUT", f"/playlists/{playlist_id}")
         await self.request(route, json=data)
 
-    async def get_playlist_tracks(
-        self, playlist_id: SpotifyID, **kwargs
-    ) -> PaginatedPayload[TrackPayload]:
+    async def get_playlist_tracks(self, playlist_id: SpotifyID, **kwargs) -> PaginatedPayload[TrackPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks"""
         route = Route("GET", f"/playlists/{playlist_id}/tracks", **kwargs)
         return await self.request(route)
 
-    async def post_playlist_tracks(
-        self, playlist_id: SpotifyID, *, uris: List[SpotifyURI], position: int
-    ) -> SnapshotID:
+    async def post_playlist_tracks(self, playlist_id: SpotifyID, *, uris: List[SpotifyURI], position: int) -> SnapshotID:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/add-tracks-to-playlist"""
         query = {
             "uris": ",".join(uris),
@@ -308,9 +294,7 @@ class HTTPClient:
         route = Route("GET", "/me/playlists", **kwargs)
         return await self.request(route)
 
-    async def get_user_playlists(
-        self, user_id: SpotifyUserID, **kwargs
-    ) -> PaginatedPayload[PlaylistPayload]:
+    async def get_user_playlists(self, user_id: SpotifyUserID, **kwargs) -> PaginatedPayload[PlaylistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-list-users-playlists"""
         route = Route("GET", f"/users/{user_id}/playlists", **kwargs)
         return await self.request(route)
@@ -337,9 +321,7 @@ class HTTPClient:
         route = Route("POST", f"/users/{user_id}/playlists")
         return await self.request(route, json=data)
 
-    async def get_browse_featured_playlists(
-        self, *, country_code: str, **kwargs
-    ) -> PaginatedPayload[PlaylistPayload]:
+    async def get_browse_featured_playlists(self, *, country_code: str, **kwargs) -> PaginatedPayload[PlaylistPayload]:
         """https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists"""
         if country_code:
             kwargs["country"] = country_code

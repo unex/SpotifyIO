@@ -111,10 +111,9 @@ class Playlist(Url, Followable):
         Yields:
             :class:`.Track`:.
         """
+
         async def gen():
-            async for data in Paginator(
-                self._state.http.get_playlist_tracks, self.id, _data=self._tracks
-            ):
+            async for data in Paginator(self._state.http.get_playlist_tracks, self.id, _data=self._tracks):
                 yield self._state.objectify(data)
 
         return GenericAsyncIterator(gen())
@@ -166,12 +165,8 @@ class Playlist(Url, Followable):
             List[:class:`bool`]
         """
         for chunk in Chunked(tracks, 20):
-            return await self._state.http.get_playlist_tracks_contains(
-                list(map(lambda x: x.id, chunk))
-            )
+            return await self._state.http.get_playlist_tracks_contains(list(map(lambda x: x.id, chunk)))
 
     def __repr__(self) -> str:
-        attrs = " ".join(
-            f"{name}={getattr(self, name)}" for name in ["id", "name", "snapshot_id"]
-        )
+        attrs = " ".join(f"{name}={getattr(self, name)}" for name in ["id", "name", "snapshot_id"])
         return f"<{self.__class__.__qualname__} {attrs}>"

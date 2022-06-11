@@ -37,6 +37,7 @@ class Album(Url):
         label: (:class:`str`): The label this album was published by.
         popularity (:class:`int`): Album popularity calculated by Spotify.
     """
+
     __slots__ = (
         "_state",
         "_tracks",
@@ -113,10 +114,9 @@ class Album(Url):
         Yields:
             :class:`.Track`:.
         """
+
         async def gen():
-            async for data in Paginator(
-                self._state.http.get_album_tracks, self.id, _data=self._tracks
-            ):
+            async for data in Paginator(self._state.http.get_album_tracks, self.id, _data=self._tracks):
                 yield self._state.objectify(data)
 
         return GenericAsyncIterator(gen())

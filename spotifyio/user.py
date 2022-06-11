@@ -32,9 +32,7 @@ class ClientUserAlbums(GenericAsyncIterator["Album"]):
 
     async def contains(self, *albums: Iterable["Album"]) -> List[bool]:
         for chunk in Chunked(albums, 20):
-            return await self._state.http.get_me_albums_contains(
-                list(map(lambda x: x.id, chunk))
-            )
+            return await self._state.http.get_me_albums_contains(list(map(lambda x: x.id, chunk)))
 
 
 class User(Url, Followable):
@@ -89,6 +87,7 @@ class User(Url, Followable):
         Yields:
             :class:`.Playlist`:
         """
+
         async def gen():
             async for data in Paginator(self._state.http.get_user_playlists, self.id):
                 yield self._state.objectify(data)
@@ -96,9 +95,7 @@ class User(Url, Followable):
         return GenericAsyncIterator(gen())
 
     def __repr__(self) -> str:
-        attrs = " ".join(
-            f"{name}={getattr(self, name)}" for name in ["id", "display_name"]
-        )
+        attrs = " ".join(f"{name}={getattr(self, name)}" for name in ["id", "display_name"])
         return f"<{self.__class__.__qualname__} {attrs}>"
 
 
@@ -139,6 +136,7 @@ class ClientUser(User):
         Yields:
             :class:`.Album`:
         """
+
         async def gen():
             async for data in Paginator(self._state.http.get_me_albums):
                 yield self._state.objectify(data)

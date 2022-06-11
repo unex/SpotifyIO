@@ -87,10 +87,9 @@ class Artist(Url, Followable):
         Yields:
             :class:`.Album`:.
         """
+
         async def gen():
-            async for data in Paginator(
-                self._state.http.get_artist_albums, self.id, include=include
-            ):
+            async for data in Paginator(self._state.http.get_artist_albums, self.id, include=include):
                 yield self._state.objectify(data)
 
         return GenericAsyncIterator(gen())
@@ -101,10 +100,9 @@ class Artist(Url, Followable):
         Yields:
             :class:`.Track`:.
         """
+
         async def gen():
-            for data in await self._state.http.get_artist_top_tracks(
-                self.id, country_code=country
-            ):
+            for data in await self._state.http.get_artist_top_tracks(self.id, country_code=country):
                 yield self._state.objectify(data)
 
         return GenericAsyncIterator(gen())
@@ -115,6 +113,7 @@ class Artist(Url, Followable):
         Yields:
             :class:`.Artist`:.
         """
+
         async def gen():
             for data in await self._state.http.get_artist_related(self.id):
                 yield self._state.objectify(data)

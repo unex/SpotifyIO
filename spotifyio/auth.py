@@ -19,9 +19,7 @@ class Token:
         self.access_token = access_token
         self.refresh_token = refresh_token
 
-        self.expires_at: datetime = datetime.now(tz=timezone.utc) + timedelta(
-            seconds=expires_in
-        )
+        self.expires_at: datetime = datetime.now(tz=timezone.utc) + timedelta(seconds=expires_in)
 
     @classmethod
     def from_refresh(cls, token):
@@ -33,9 +31,7 @@ class Token:
 
     @property
     def expired(self):
-        return self.access_token is None or self.expires_at <= datetime.now(
-            tz=timezone.utc
-        )
+        return self.access_token is None or self.expires_at <= datetime.now(tz=timezone.utc)
 
 
 class AuthorizationFlow:

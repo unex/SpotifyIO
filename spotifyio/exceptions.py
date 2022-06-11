@@ -24,9 +24,7 @@ class HTTPException(SpotifyException):
             self.code = error.get("status")
             self.text = error.get("message")
 
-        super().__init__(
-            f"{self.code} {self.text} ({self.status} {self.response.reason})"
-        )
+        super().__init__(f"{self.code} {self.text} ({self.status} {self.response.reason})")
 
 
 class Forbidden(HTTPException):

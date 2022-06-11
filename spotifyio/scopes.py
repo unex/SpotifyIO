@@ -32,9 +32,7 @@ class Scopes:
     user_library_read: bool = False
 
     def __repr__(self) -> str:
-        fields = ", ".join(
-            [f"{k}=True" for k in self.__slots__ if getattr(self, k) == True]
-        )
+        fields = ", ".join([f"{k}=True" for k in self.__slots__ if getattr(self, k) == True])
         return f"{self.__class__.__qualname__}({fields})"
 
     def __iter__(self) -> list:
