@@ -14,54 +14,54 @@ Album
 ~~~~~~~
 
 .. attributetable:: Album
-.. autoclass:: Album
+.. autoclass:: Album()
     :members:
 
 Artist
 ~~~~~~~
 
 .. attributetable:: Artist
-.. autoclass:: Artist
+.. autoclass:: Artist()
     :members:
 
 Playlist
 ~~~~~~~~
 
 .. attributetable:: Playlist
-.. autoclass:: Playlist
+.. autoclass:: Playlist()
     :members:
 
 Track
 ~~~~~~~
 
 .. attributetable:: Track
-.. autoclass:: Track
+.. autoclass:: Track()
     :members:
 
 ListTrack
 ~~~~~~~~~
 
 .. attributetable:: ListTrack
-.. autoclass:: ListTrack
+.. autoclass:: ListTrack()
     :members:
 
 User
 ~~~~~~~
 
 .. attributetable:: User
-.. autoclass:: User
+.. autoclass:: User()
     :members:
 
 ClientUser
 ~~~~~~~~~~
 
 .. attributetable:: ClientUser
-.. autoclass:: ClientUser
+.. autoclass:: ClientUser()
     :members:
 
 Asset
 ~~~~~~~~~~
 
 .. attributetable:: Asset
-.. autoclass:: Asset
+.. autoclass:: Asset()
     :members:
