@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Iterable, List
 
 from .asset import Asset
+from .iterators import GenericAsyncIterator
 from .mixins import Followable, Url
 from .types import SpotifyID, SpotifyURI
 from .utils.chunked import Chunked
-from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 
 if TYPE_CHECKING:
@@ -105,7 +105,7 @@ class Playlist(Url, Followable):
             collaborative=collaborative,
         )
 
-    def tracks(self) -> ListIterator["ListTrack"]:
+    def tracks(self) -> GenericAsyncIterator["ListTrack"]:
         """An asynchronous iterator for the playlist Tracks.
 
         Yields:
@@ -117,7 +117,7 @@ class Playlist(Url, Followable):
             ):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     async def add(self, *tracks: Iterable["Track"], position: int = None) -> None:
         """Add a track to this playlist.

@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, List, Literal
 
 from .asset import Asset
+from .iterators import GenericAsyncIterator
 from .mixins import Followable, Url
 from .types import SpotifyID, SpotifyURI
-from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 
 if TYPE_CHECKING:
@@ -78,7 +78,7 @@ class Artist(Url, Followable):
             "appears_on",
             "compilation",
         ],
-    ) -> ListIterator["Album"]:
+    ) -> GenericAsyncIterator["Album"]:
         """An asynchronous iterator for the artist's albums.
 
         Args:
@@ -93,9 +93,9 @@ class Artist(Url, Followable):
             ):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
-    def top_tracks(self, country: str = "US") -> ListIterator["Track"]:
+    def top_tracks(self, country: str = "US") -> GenericAsyncIterator["Track"]:
         """An asynchronous iterator for the artist's top tracks.
 
         Yields:
@@ -107,9 +107,9 @@ class Artist(Url, Followable):
             ):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
-    def related(self) -> ListIterator["Artist"]:
+    def related(self) -> GenericAsyncIterator["Artist"]:
         """An asynchronous iterator for related artists.
 
         Yields:
@@ -119,7 +119,7 @@ class Artist(Url, Followable):
             for data in await self._state.http.get_artist_related(self.id):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     async def fetch(self) -> None:
         """Updates a partial of this object with all data"""

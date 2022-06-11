@@ -6,13 +6,13 @@ from .album import Album
 from .artist import Artist
 from .auth import FLOWS, Token
 from .http import HTTPClient
+from .iterators import GenericAsyncIterator
 from .playlist import Playlist
 from .state import State
 from .track import Track
 from .types import SpotifyID, SpotifyUserID
 from .user import ClientUser, User
 from .utils.chunked import Chunked
-from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 
 
@@ -73,7 +73,7 @@ class Client:
         """
         return self._state.objectify(await self._http.get_album(album_id))
 
-    def fetch_albums(self, *album_ids: List[SpotifyID]) -> ListIterator[Album]:
+    def fetch_albums(self, *album_ids: List[SpotifyID]) -> GenericAsyncIterator[Album]:
         """An asynchronous iterator for multiple Albums.
 
         Args:
@@ -90,7 +90,7 @@ class Client:
                 for album in await self._http.get_albums(chunk):
                     yield self._state.objectify(album)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     async def fetch_artist(self, artist_id: SpotifyID) -> Artist:
         """Retrieve an artist with the given ID.
@@ -106,7 +106,7 @@ class Client:
         """
         return self._state.objectify(await self._http.get_artist(artist_id))
 
-    def fetch_artists(self, *artist_ids: List[SpotifyID]) -> ListIterator[Artist]:
+    def fetch_artists(self, *artist_ids: List[SpotifyID]) -> GenericAsyncIterator[Artist]:
         """An asynchronous iterator for multiple Artists.
 
         Args:
@@ -123,7 +123,7 @@ class Client:
                 for artist in await self._http.get_artists(chunk):
                     yield self._state.objectify(artist)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     async def fetch_track(self, track_id: SpotifyID) -> Track:
         """Retrieve a track with the given ID.
@@ -139,7 +139,7 @@ class Client:
         """
         return self._state.objectify(await self._http.get_track(track_id))
 
-    def fetch_tracks(self, *track_ids: List[SpotifyID]) -> ListIterator[Track]:
+    def fetch_tracks(self, *track_ids: List[SpotifyID]) -> GenericAsyncIterator[Track]:
         """An asynchronous iterator for multiple Tracks.
 
         .. :async-for:
@@ -158,7 +158,7 @@ class Client:
                 for track in await self._http.get_tracks(chunk):
                     yield self._state.objectify(track)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     async def fetch_user(self, user_id: SpotifyUserID) -> User:
         """Retrieve a user with the given ID.
@@ -188,7 +188,7 @@ class Client:
         """
         return self._state.objectify(await self._http.get_playlist(playlist_id))
 
-    def new_album_releases(self, country: str = None) -> ListIterator[Album]:
+    def new_album_releases(self, country: str = None) -> GenericAsyncIterator[Album]:
         """An asynchronous iterator for new Album releases.
 
         Yields:
@@ -200,9 +200,9 @@ class Client:
             ):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
-    def featured_playlists(self, country: str = None) -> ListIterator[Playlist]:
+    def featured_playlists(self, country: str = None) -> GenericAsyncIterator[Playlist]:
         """An asynchronous iterator for featured Playlists.
 
         Yields:
@@ -214,4 +214,4 @@ class Client:
             ):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())

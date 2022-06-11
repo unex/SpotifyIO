@@ -2,9 +2,9 @@ from datetime import date
 from typing import TYPE_CHECKING, List, Literal
 
 from .asset import Asset
+from .iterators import GenericAsyncIterator
 from .mixins import Url
 from .types import SpotifyID, SpotifyURI
-from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 from .utils.time import fromspotifyiso
 
@@ -107,7 +107,7 @@ class Album(Url):
         self.label = data.get("label")
         self.popularity = data.get("popularity")
 
-    def tracks(self) -> ListIterator["Track"]:
+    def tracks(self) -> GenericAsyncIterator["Track"]:
         """An asynchronous iterator for the album Tracks.
 
         Yields:
@@ -119,7 +119,7 @@ class Album(Url):
             ):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     async def fetch(self) -> None:
         """Updates a partial of this object with all data"""

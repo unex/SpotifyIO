@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Iterable, List, Optional
 
 from .asset import Asset
+from .iterators import GenericAsyncIterator
 from .mixins import Followable, Url
 from .types import SpotifyURI, SpotifyUserID
 from .utils.chunked import Chunked
-from .utils.list_iterator import ListIterator
 from .utils.paginator import Paginator
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from .types import ClientUserPayload, UserPayload
 
 
-class ClientUserAlbums(ListIterator["Album"]):
+class ClientUserAlbums(GenericAsyncIterator["Album"]):
     def __init__(self, state, *args, **kwargs) -> None:
         self._state: State = state
 
@@ -83,7 +83,7 @@ class User(Url, Followable):
         else:
             self.images = None
 
-    def playlists(self) -> ListIterator["Playlist"]:
+    def playlists(self) -> GenericAsyncIterator["Playlist"]:
         """An asynchronous iterator for the users's saved playlists.
 
         Yields:
@@ -93,7 +93,7 @@ class User(Url, Followable):
             async for data in Paginator(self._state.http.get_user_playlists, self.id):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     def __repr__(self) -> str:
         attrs = " ".join(
@@ -145,12 +145,12 @@ class ClientUser(User):
 
         return ClientUserAlbums(self._state, gen())
 
-    def playlists(self) -> ListIterator["Playlist"]:
+    def playlists(self) -> GenericAsyncIterator["Playlist"]:
         async def gen():
             async for data in Paginator(self._state.http.get_me_playlists):
                 yield self._state.objectify(data)
 
-        return ListIterator(gen())
+        return GenericAsyncIterator(gen())
 
     async def create_playlist(
         self,
