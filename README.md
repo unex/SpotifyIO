@@ -6,4 +6,8 @@ Inspired by [discord.py](https://github.com/Rapptz/discord.py), [tekore](https:/
 
 ___
 
+[Documentation](https://spotifyio.readthedocs.io/en/latest/)
+
+___
+
 Currently WIP, all features subject to change.
